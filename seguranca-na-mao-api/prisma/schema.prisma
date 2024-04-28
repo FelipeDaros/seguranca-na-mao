@@ -1,0 +1,231 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                 String               @id @default(uuid())
+  nome               String
+  senha              String
+  email              String
+  created_at         DateTime             @default(now())
+  Posto              Posto?               @relation(fields: [posto_id], references: [id])
+  posto_id           Int?
+  updated_at         DateTime?
+  isAdmin            Boolean              @default(false)
+  ultimo_login        DateTime             @default(now())
+  estaLogado         Boolean              @map("esta_logado")
+  empresa_id         Int?
+  ultima_ronda       DateTime?
+  horario_alerta     DateTime?
+  tipo_usuario       String?
+  status_logado      String?
+  welcome_screen     Boolean @default(false)
+  Panico             Panico[]
+  Servico            Servico[]
+  RegistroOcorrencia RegistroOcorrencia[]
+  GerarRondas        GerarRondas[]
+  Alerta             Alerta[]
+  Configuracoes      Configuracoes[]
+
+  @@map("usuario")
+}
+
+model Empresa {
+  id      Int       @id @default(autoincrement())
+  nome    String
+  cidade  String
+  estado  String
+  Servico Servico[]
+  Posto   Posto[]
+  Panico  Panico[]
+
+  @@map("empresa")
+}
+
+model Posto {
+  id                Int                 @id @default(autoincrement())
+  nome              String
+  Empresa           Empresa?            @relation(fields: [empresa_id], references: [id])
+  empresa_id        Int
+  created_at        DateTime            @default(now())
+  updated_at        DateTime?
+  Servico           Servico[]
+  Ponto             Ponto[]
+  EquipamentosPosto EquipamentosPosto[]
+  GerarRondas       GerarRondas[]
+  Usuario           Usuario[]
+
+  @@map("posto")
+}
+
+model EquipamentosPosto {
+  id             Int           @id @default(autoincrement())
+  Equipamentos   Equipamentos? @relation(fields: [equipamento_id], references: [id])
+  equipamento_id Int
+  Posto          Posto?        @relation(fields: [posto_id], references: [id])
+  posto_id       Int
+
+  created_at DateTime @default(now())
+
+  @@map("equipamentos_posto")
+}
+
+model Equipamentos {
+  id                  Int                   @id @default(autoincrement())
+  nome                String
+  created_at          DateTime              @default(now())
+  updated_at          DateTime?
+  EquipamentosPosto   EquipamentosPosto[]
+  EquipamentosServico EquipamentosServico[]
+
+  @@map("equipamentos")
+}
+
+model Panico {
+  id         Int      @id @default(autoincrement())
+  User       Usuario? @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  usuario_id String
+
+  Empresa    Empresa? @relation(fields: [empresa_id], references: [id])
+  empresa_id Int?
+
+  verificado Boolean
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@map("panico")
+}
+
+model Ponto {
+  id                  Int           @id @default(autoincrement())
+  nome                String
+  latitude            Float
+  longitude           Float
+  Posto               Posto?        @relation(fields: [posto_id], references: [id])
+  posto_id            Int
+  caminho_foto_qrcode String?
+  created_at          DateTime      @default(now())
+  updated_at          DateTime?
+  GerarRondas         GerarRondas[]
+
+  @@map("ponto")
+}
+
+model RegistroOcorrencia {
+  id              Int               @id @default(autoincrement())
+  titulo          String
+  descricao       String
+  User            Usuario?          @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  usuario_id      String
+  possuiFoto      Boolean           @map("possui_foto")
+  dataOcorrencia  DateTime          @map("data_ocorrencia")
+  created_at      DateTime          @default(now())
+  FotosOcorrencia FotosOcorrencia[]
+  status          String?
+
+  @@map("registro_ocorrencia")
+}
+
+model FotosOcorrencia {
+  id                     Int                 @id @default(autoincrement())
+  nomeArquivo            String?             @map("nome_arquivo")
+  base64                 String?
+  RegistroOcorrencia     RegistroOcorrencia? @relation(fields: [registro_ocorrencia_id], references: [id])
+  registro_ocorrencia_id Int
+  url                    String
+  created_at             DateTime            @default(now())
+
+  @@map("fotos_ocorrencia")
+}
+
+model GerarRondas {
+  id             Int       @id @default(autoincrement())
+  User           Usuario?  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  usuario_id     String
+  verificado     Boolean?  @default(false)
+  atrasado       Boolean?  @default(false)
+  Posto          Posto?    @relation(fields: [posto_id], references: [id])
+  posto_id       Int
+  created_at     DateTime  @default(now())
+  maximo_horario DateTime?
+
+  Servico    Servico? @relation(fields: [servico_id], references: [id])
+  servico_id Int?
+
+  cancelado Boolean?
+  motivo    String?
+
+  isSincronized Boolean @default(false)
+
+  Ponto    Ponto? @relation(fields: [ponto_id], references: [id])
+  ponto_id Int
+
+  @@map("gerar_rondas")
+}
+
+model Alerta {
+  id         Int      @id @default(autoincrement())
+  User       Usuario? @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  usuario_id String
+
+  Servico    Servico? @relation(fields: [servico_id], references: [id])
+  servico_id Int
+  created_at DateTime @default(now())
+
+  @@map("alerta")
+}
+
+model Servico {
+  id         Int      @id @default(autoincrement())
+  User       Usuario? @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  usuario_id String
+
+  Empresa    Empresa? @relation(fields: [empresa_id], references: [id])
+  empresa_id Int
+
+  Posto    Posto? @relation(fields: [posto_id], references: [id])
+  posto_id Int
+
+  relatorioLido Boolean? @map("relatorio_lido")
+
+  created_at          DateTime              @default(now())
+  EquipamentosServico EquipamentosServico[]
+  Alerta              Alerta[]
+  GerarRondas         GerarRondas[]
+
+  @@map("servico")
+}
+
+model EquipamentosServico {
+  id             Int           @id @default(autoincrement())
+  Equipamentos   Equipamentos? @relation(fields: [equipamento_id], references: [id])
+  equipamento_id Int
+
+  Servico    Servico? @relation(fields: [servico_id], references: [id])
+  servico_id Int
+
+  created_at DateTime @default(now())
+
+  @@map("equipamentos_servico")
+}
+
+model Configuracoes {
+  id         Int      @id @default(autoincrement())
+  tipo       String
+  User       Usuario? @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  valor      Int
+  parametro  String?
+  usuario_id String
+  created_at DateTime @default(now())
+
+  @@map("configuracoes")
+}

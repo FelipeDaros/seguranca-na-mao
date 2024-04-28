@@ -1,0 +1,25 @@
+# Use the official Node.js image as the base (choose the appropriate version for your application)
+FROM node:16.20
+
+# Upgrade npm to version 9.x (optional, but recommended)
+RUN npm install -g npm@8.19.4
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to leverage dependency caching
+COPY package*.json ./
+
+# Install application dependencies
+RUN npm install
+
+# Copy the rest of the project files to the container
+COPY . .
+
+RUN npx prisma migrate dev
+
+# Expose the port used by your Nest.js application (if needed)
+EXPOSE 3005
+
+# Command to start the Nest.js application
+CMD ["npm", "run", "start"]
