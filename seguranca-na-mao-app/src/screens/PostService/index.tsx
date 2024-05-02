@@ -18,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../../components/Button";
+import axios from "axios";
 
 type FormData = {
   nome: string;
@@ -62,15 +63,28 @@ export default function PostService() {
       const { data } = await api.get("/equipamentos");
       setEquipaments(data);
     } catch (error) {
-      if (error.response.status === 401) {
-        signOut();
-        toast.show({
-          title: "Você precisa efetuar o login!",
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
-        return;
+      if(axios.isAxiosError(error)){
+        if(error.code === "401"){
+          signOut();
+          toast.show({
+            title: "Você precisa efetuar o login!",
+            duration: 3000,
+            bg: "error.500",
+            placement: "top",
+          });
+          return;
+        }
+        
+        if(error.response){
+          toast.show({
+            title: error.response.data.message,
+            duration: 3000,
+            bg: "error.500",
+            placement: "top",
+          });
+  
+          return;
+        }
       }
 
       toast.show({
@@ -123,7 +137,7 @@ export default function PostService() {
       toast.show({
         title: "Posto criado com sucesso!",
         duration: 3000,
-        bg: "green.500",
+        bg: "personColors.50",
         placement: "top",
       });
     } catch (error: any) {
@@ -227,11 +241,14 @@ export default function PostService() {
           />
           <VStack>
             <ScrollView
-              maxH="56"
+              maxH="72"
               w="90%"
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
             >
+              <Text color="personColors.150" fontFamily="body" fontSize="md" mt={2}>
+                Selecione os equipamentos abaixo
+              </Text>
               {equipaments?.length >= 1 &&
                 equipaments?.map((equipaments, index) => (
                   <Box
@@ -289,7 +306,7 @@ export default function PostService() {
         </VStack>
       </VStack>
       <Button
-        title="Salvar"
+        title="Cadastrar"
         isLoading={isLoading}
         onPress={handleSubmit(handleSave)}
       />

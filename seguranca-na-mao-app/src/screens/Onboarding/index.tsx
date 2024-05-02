@@ -1,27 +1,30 @@
-import { Icon, Pressable, Text, VStack, useToast } from "native-base";
+import { Image, useToast } from "native-base";
 import { useState } from "react";
-import { StepsOnboarding } from "./Components/StepsOnboarding";
-import { ScreenOnboarding } from "./Components/ScreenOnboarding";
+import axios from "axios";
 
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
 import Loading from "../../components/Loading";
+import OnboardingComponent from 'react-native-onboarding-swiper';
 
-type Props = {
-  step: number;
-  text: string;
-}
+import Image1 from '../../assets/image1.png';
+import Image2 from '../../assets/image2.png';
+import Image3 from '../../assets/image3.png';
+import Image4 from '../../assets/image4.png';
+import Image5 from '../../assets/image5.png';
+import ImgSvg from '../../assets/undraw_reminder_re_fe15.svg';
+
+import { Next } from "./Components/Next";
+import { Done } from "./Components/Done";
+import { Skip } from "./Components/Skip";
+import { Dot } from "./Components/Dot";
 
 export function Onboarding() {
   const { user, updateUser } = useAuth();
   const toast = useToast();
 
-  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-
-  const nextStep = () => step < arraySteps.length ? setStep(step + 1) : handleFinishOnboarding();
 
   async function handleFinishOnboarding() {
     try {
@@ -43,6 +46,15 @@ export function Onboarding() {
       await api.put(`/usuarios/${user?.user.id}`, payload);
       updateUser(payloadContext);
     } catch (error) {
+      if(axios.isAxiosError(error)){
+        toast.show({
+          title: error.response?.data.message,
+          duration: 3000,
+          bg: "error.500",
+          placement: "top",
+        });
+        return;
+      }
       toast.show({
         title: "Erro ao tentar efetuar o onboarding",
         duration: 3000,
@@ -58,71 +70,57 @@ export function Onboarding() {
     return(<Loading />);
   }
 
-  const arraySteps: Props[] = [
+  
+  const steps = [
     {
-      step: 1,
-      text: 'Vamos fazer uma breve apresentação das funcionalidades e de onde estão localizadas para que você se sinta familiarizado com o ambiente.'
+      backgroundColor: '#fff',
+      image: <ImgSvg width={350} height={350}/>,
+      title: 'Seja bem vindo!',
+      subtitle: 'Vamos fazer uma breve apresentação das funcionalidades e de onde estão localizadas para que você se sinta familiarizado com o ambiente.',
     },
     {
-      step: 2,
-      text: 'O botão retratado na imagem acima é onde você emitirá seus alertas de vigilância.',
+      backgroundColor: '#fff',
+      image: <Image source={Image1} alt="image" style={{width: 200, height: 400}}/>,
+      title: 'Alertas',
+      subtitle: 'O botão retratado na imagem acima é onde você emitirá seus alertas de vigilância.',
     },
     {
-      step: 3,
-      text: 'Suas rondas estão localizadas no card destacado acima na imagem.',
+      backgroundColor: '#fff',
+      image: <Image source={Image2} alt="image" style={{width: 200, height: 400}}/>,
+      title: 'Rondas',
+      subtitle: 'Suas rondas estão localizadas no card destacado acima na imagem.',
     },
     {
-      step: 4,
-      text: 'Em caso de emergência durante o serviço, pressione e segure o card destacado acima na imagem por alguns segundos.',
+      backgroundColor: '#fff',
+      image: <Image source={Image3} alt="image" style={{width: 200, height: 400}}/>,
+      title: 'Emergência',
+      subtitle: 'Em caso de emergência durante o serviço, pressione e segure o card destacado acima na imagem por alguns segundos.',
     },
     {
-      step: 5,
-      text: 'Para registrar uma ocorrência durante o serviço, basta acessar o card mencionado acima.',
+      backgroundColor: '#fff',
+      image: <Image source={Image4} alt="image" style={{width: 200, height: 400}}/>,
+      title: 'Ocorrência',
+      subtitle: 'Para registrar uma ocorrência durante o serviço, basta acessar o card mencionado acima.',
     },
     {
-      step: 6,
-      text: 'Para encerrar o expediente, pressione o botão ao lado de sua foto e selecione a opção "Finalizar expediente" conforme indicado na imagem mencionada acima.',
+      backgroundColor: '#fff',
+      image: <Image source={Image5} alt="image" style={{width: 200, height: 400}}/>,
+      title: 'Expediente',
+      subtitle: 'Para encerrar o expediente, pressione o botão ao lado de sua foto e selecione a opção "Finalizar expediente" conforme indicado na imagem mencionada acima.',
     },
   ];
 
-  const currentStep = arraySteps.find((item) => item.step === step);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <VStack justifyContent="center" alignItems="center" flex={1}>
-        {step === 1 && (
-          <Text
-            color="personColors.150"
-            fontFamily="heading"
-            fontSize="2xl"
-            mb="4"
-          >
-            Seja bem vindo!
-          </Text>
-        )}
-        <ScreenOnboarding
-          // @ts-ignore
-          text={currentStep?.text}
-          // @ts-ignore
-          step={currentStep?.step}
-        />
-        <VStack alignItems="center" justifyContent="center" bottom={5} position="absolute">
-          <StepsOnboarding step={step} quantitySteps={arraySteps.length} />
-          <Pressable
-            _pressed={{
-              opacity: 0.5
-            }}
-            onPress={nextStep}
-          >
-            <Icon
-              size={12}
-              as={MaterialCommunityIcons}
-              color="personColors.50"
-              name="arrow-right-bold-circle"
-            />
-          </Pressable>
-        </VStack>
-      </VStack>
+      <OnboardingComponent 
+        pages={steps}
+        SkipButtonComponent={Skip}
+        NextButtonComponent={Next}
+        DoneButtonComponent={Done}
+        DotComponent={Dot}
+        bottomBarHeight={50}
+        onDone={handleFinishOnboarding}
+      />
     </SafeAreaView>
   )
 }
