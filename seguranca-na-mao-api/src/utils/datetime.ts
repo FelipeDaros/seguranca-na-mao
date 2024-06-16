@@ -9,6 +9,10 @@ export function addHorario(value: moment.DurationInputArg1, param: moment.unitOf
     return moment().tz("America/Sao_Paulo").add(value, param).format('YYYY-MM-DD HH:mm:ss');
 }
 
+export function momentoAtualString(){
+    return moment().format()
+}
+
 export function horarioAtualConfigurado(){
     return moment().add(-3, 'hours').toDate();
 }

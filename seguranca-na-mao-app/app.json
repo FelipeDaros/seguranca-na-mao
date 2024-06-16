@@ -61,7 +61,12 @@
         }
       ],
       [
-        "expo-notifications"
+        "expo-notifications",
+        {
+          "sounds": [
+            "src/assets/notification-sound.wav"
+          ]
+        }
       ]
     ],
     "ios": {

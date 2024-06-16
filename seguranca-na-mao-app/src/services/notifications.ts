@@ -41,7 +41,8 @@ async function scheduleNotification(configuracao: IConfiguracoes | undefined) {
         title: 'SEGURANÇA NA MAO - Alerta vigia!',
         priority: Notifications.AndroidNotificationPriority.MAX,
         body: 'Você precisa emitir o alerta vigia!',
-        categoryIdentifier: 'alerta'
+        categoryIdentifier: 'alerta',
+        // sound: 'notification-sound.wav'
       },
       trigger: {
         seconds: valor

@@ -8,25 +8,25 @@ import prisma from 'src/prisma.service';
 @Injectable()
 export class RelatoriosService {
   constructor() { }
-  public async buscarAlertas({ dataFinal, dataInicial, empresa_id }: RelatorioAlertaDto): Promise<Alerta[]> {
-    return await prisma.alerta.findMany({
-      where: {
-        User: {
-          empresa_id: +empresa_id
-        },
-        created_at: {
-          gt: dataInicial,
-          lt: dataFinal
-        }
-      },
-      include: {
-        User: true
-      },
-      orderBy: {
-        created_at: 'desc'
-      }
-    });
-  }
+  // public async buscarAlertas({ dataFinal, dataInicial, empresa_id }: RelatorioAlertaDto): Promise<Alerta[]> {
+  //   // return await prisma.alerta.findMany({
+  //   //   where: {
+  //   //     User: {
+  //   //       empresa_id: +empresa_id
+  //   //     },
+  //   //     created_at: {
+  //   //       gt: dataInicial,
+  //   //       lt: dataFinal
+  //   //     }
+  //   //   },
+  //   //   include: {
+  //   //     User: true
+  //   //   },
+  //   //   orderBy: {
+  //   //     created_at: 'desc'
+  //   //   }
+  //   // });
+  // }
 
   public async buscarRondas({ dataFinal, dataInicial, empresa_id }: RelatorioRondaDto): Promise<GerarRondas[]> {
 

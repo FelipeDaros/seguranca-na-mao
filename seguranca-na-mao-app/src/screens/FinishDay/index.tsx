@@ -5,9 +5,9 @@ import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { IFinishDay } from "../../interfaces/IFinishDay";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Button } from "../../components/Button";
 import Loading from "../../components/Loading";
 import moment from "moment-timezone";
+import CustomButton from "../../components/CustomButton";
 
 export function FinishDay() {
   const toast = useToast();
@@ -111,7 +111,7 @@ export function FinishDay() {
           {/* @ts-ignore */}
           <Checkbox mt="2" value={confirmaDevolucao} onChange={handleDevolucaoCheckBox} aria-label="confirmaDevolucao" />
         </VStack>
-        <Button bg="error.500" title="Finalizar Expediente" onPress={finish} mt="4" />
+        <CustomButton bg="error.500" title="Finalizar Expediente" onPress={finish} mt="4" alignSelf="center"/>
       </ScrollView>
     </SafeAreaView>
   )

@@ -20,6 +20,7 @@ export interface IUsuario {
   configuracao?: IConfiguracoes[],
   ultimaRonda?: Date;
   servico?: IServico;
+  proximaRonda: string;
 }
 
 export interface IConfiguracoes {

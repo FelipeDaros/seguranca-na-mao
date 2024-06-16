@@ -6,6 +6,7 @@ import Loading from "../components/Loading";
 import { useNetInfo } from '@react-native-community/netinfo';
 import { generateNowTimesTamp } from "../utils/utils";
 import { IServico } from "../interfaces/IServico";
+import moment from "moment-timezone";
 
 type AuthContextDataProps = {
   user: IUsuario | null;
@@ -44,15 +45,15 @@ const AuthContextProvider: React.FC = ({ children }) => {
     }
     loadStoragedData();
 
-    if(netInfo.isConnected) {
+    if (netInfo.isConnected) {
       setIsConnected(true);
-    }else{
+    } else {
       setIsConnected(false);
     }
 
   }, [netInfo.isConnected]);
 
-  async function handleFinishDay(): Promise<void>{
+  async function handleFinishDay(): Promise<void> {
     const storagedUser = await AsyncStorage.getItem("@SEGMAO:user");
 
     // @ts-ignore
@@ -89,6 +90,15 @@ const AuthContextProvider: React.FC = ({ children }) => {
     userParsed.user.status_logado = 'LOGADO';
     userParsed.servico = servico;
 
+    if (userParsed.user.tipo_usuario === 'VIGILANTE') {
+      const config = userParsed?.configuracao?.find(configuracao => configuracao.tipo === 'RONDA');
+
+      if (config) {
+        // @ts-ignore
+        userParsed.proximaRonda = moment().add(config?.valor, config?.parametro).format();
+      }
+    }
+
     setUser(userParsed);
 
     await AsyncStorage.setItem("@SEGMAO:user", JSON.stringify(userParsed));
@@ -103,7 +113,7 @@ const AuthContextProvider: React.FC = ({ children }) => {
       userParsed.user.horario_alerta = data;
       userParsed.ultimoAlerta = data;
 
-      if(netInfo.isConnected){
+      if (netInfo.isConnected) {
         await api.post('/usuarios/update-horario-alerta', {
           id,
           horario_alerta: data
@@ -126,11 +136,20 @@ const AuthContextProvider: React.FC = ({ children }) => {
 
       userParsed.ultimaRonda = data;
 
-      if(netInfo.isConnected){
+      if (netInfo.isConnected) {
         await api.post('/usuarios/update-horario-ronda', {
           id,
           horario_alerta: data
         })
+      }
+
+      if (userParsed.user.tipo_usuario === 'VIGILANTE') {
+        const config = userParsed?.configuracao?.find(configuracao => configuracao.tipo === 'RONDA');
+
+        if (config) {
+          // @ts-ignore
+          userParsed.proximaRonda = moment().add(config?.valor, config?.parametro).format();
+        }
       }
 
       setUser(userParsed);
@@ -144,25 +163,25 @@ const AuthContextProvider: React.FC = ({ children }) => {
   async function signIn(data: any, servico: IServico): Promise<any> {
     try {
       api.defaults.headers["Authorization"] = `Bearer ${data.token}`;
-      
+
       if (data) {
         const user = {
           ...data,
           ultimaRonda: generateNowTimesTamp()
         };
 
-        if(user.user.tipo_usuario === "VIGILANTE"){
-          if(!user.user.status_logado){
+        if (user.user.tipo_usuario === "VIGILANTE") {
+          if (!user.user.status_logado) {
             user.user.status_logado = "CHECKLIST";
           }
-        }else{
+        } else {
           user.user.status_logado = "LOGADO";
         }
 
         user.servico = servico;
 
         await AsyncStorage.setItem("@SEGMAO:user", JSON.stringify(user));
-        
+
         setUser(data);
       }
 

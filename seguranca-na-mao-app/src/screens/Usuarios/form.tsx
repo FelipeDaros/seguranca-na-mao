@@ -8,7 +8,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { IPosto } from "../../interfaces/IPosto";
 import Loading from "../../components/Loading";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../../components/Button";
+import CustomButton from "../../components/CustomButton";
+import axios from "axios";
 
 interface IUser {
     nome: string;
@@ -16,6 +17,19 @@ interface IUser {
     email: string;
     posto_id: number;
     tipo_usuario: string;
+    empresa_id: number;
+}
+
+interface IEmpresa {
+    id: number;
+    nome: string;
+    estado: string;
+    cidade: string;
+    documento: string;
+    responsavel: string;
+    contato: string;
+    endereco: string;
+    email: string;
 }
 
 const tiposUsuarios = [
@@ -28,12 +42,14 @@ export function FormUsuarios() {
     const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [postos, setPostos] = useState<IPosto[]>([]);
+    const [empresas, setEmpresas] = useState<IEmpresa[]>([]);
+    const [empresa, setEmpresa] = useState<number>();
 
     const {
         control,
         handleSubmit,
         reset,
-        getValues,
+        getFieldState,
         formState: { errors },
     } = useForm<IUser>({
         defaultValues: {
@@ -43,10 +59,10 @@ export function FormUsuarios() {
         },
     });
 
-    async function buscarPostos() {
+    async function buscarPostos(id: number) {
         try {
             setIsLoading(true)
-            const { data } = await api.get(`/posto-servico/${user?.user.empresa_id}`);
+            const { data } = await api.get(`/posto-servico/${id}`);
             setPostos(data);
         } catch (error) {
             toast.show({
@@ -60,15 +76,15 @@ export function FormUsuarios() {
         }
     }
 
-    async function handleSave({ email, nome, senha, posto_id, tipo_usuario }: IUser) {
+    async function handleSave({ email, nome, senha, posto_id, tipo_usuario, empresa_id }: IUser) {
         try {
             setIsLoading(true);
             await api.post('/usuarios', {
                 nome: nome.toLowerCase().replace(/\s/g, ''),
-                senha: nome.toLowerCase().replace(/\s/g, ''),
+                senha: senha.toLowerCase().replace(/\s/g, ''),
                 email,
                 posto_id,
-                empresa_id: user?.user?.empresa_id,
+                empresa_id: empresa_id ?? user?.user?.empresa_id,
                 email_responsavel: user?.user?.email,
                 tipo_usuario: tipo_usuario
             });
@@ -80,14 +96,13 @@ export function FormUsuarios() {
             });
             reset();
         } catch (error: any) {
-            if (error.response.data.statusCode === 400) {
-                toast.show({
-                    title: error.response.data.message,
+            if (axios.isAxiosError(error)) {
+                return toast.show({
+                    title: error.response?.data.message,
                     duration: 3000,
                     bg: "error.500",
                     placement: "top",
                 });
-                return;
             }
             toast.show({
                 title: "Erro ao cadastrar Usuário!",
@@ -100,12 +115,40 @@ export function FormUsuarios() {
         }
     }
 
+    async function fetchEmpresas() {
+        try {
+            const { data } = await api.get('/empresa');
+            setEmpresas(data);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                return toast.show({
+                    title: error.response?.data.message,
+                    duration: 3000,
+                    bg: "error.500",
+                    placement: "top",
+                });
+            }
+        }
+    }
+
     useEffect(() => {
-        buscarPostos()
-    }, []);
+        if (user?.user.tipo_usuario === 'ADMINISTRADOR') {
+            if (!!empresa) {
+                console.log(empresa)
+                buscarPostos(empresa);
+            }
+        } else {
+            // @ts-ignore
+            buscarPostos(user?.user?.empresa_id);
+        }
+
+        if (user?.user.tipo_usuario === 'ADMINISTRADOR') {
+            fetchEmpresas();
+        }
+    }, [empresa]);
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
             <Header back />
             {isLoading &&
                 <VStack flex={1} justifyContent="center" alignItems="center" mt="4">
@@ -113,7 +156,7 @@ export function FormUsuarios() {
                 </VStack>}
             {!isLoading &&
                 <ScrollView>
-                    <VStack justifyContent="center" alignItems="center" mt="4" mb="4">
+                    <VStack alignItems="center" mt="4" mb="4">
                         <Text fontFamily="mono" color="personColors.150" fontSize="lg">
                             Painel de controle de usuários
                         </Text>
@@ -172,6 +215,39 @@ export function FormUsuarios() {
                                 name="email"
                             />
                             {errors.email && <Text color="danger.500">Campo obrigatório</Text>}
+                            {user?.user.tipo_usuario === 'ADMINISTRADOR' &&
+                                <>
+                                    <Text mt="4" color="personColors.150" fontWeight="bold">Empresa</Text>
+                                    <Controller
+                                        control={control}
+                                        rules={{
+                                            required: user?.user.tipo_usuario === 'ADMINISTRADOR',
+                                        }}
+                                        render={({ field: { onChange, onBlur, value } }) => (
+                                            <Select
+                                                mt="4"
+                                                placeholder="Selecione aqui"
+                                                // @ts-ignore
+                                                selectedValue={value}
+                                                onValueChange={(empresa: any) => {
+                                                    setEmpresa(empresa);
+                                                    onChange(empresa);
+                                                }}
+                                            >
+                                                {empresas.map((empresa: any) => (
+                                                    <Select.Item
+                                                        key={empresa?.id}
+                                                        label={empresa?.nome}
+                                                        value={empresa.id}
+                                                    />
+                                                ))}
+                                            </Select>
+                                        )}
+                                        name="empresa_id"
+                                    />
+                                    {errors.empresa_id && <Text color="danger.500">Campo obrigatório</Text>}
+                                </>
+                            }
                             <Text mt="4" color="personColors.150" fontWeight="bold">Posto de servico</Text>
                             <Controller
                                 control={control}
@@ -187,6 +263,7 @@ export function FormUsuarios() {
                                         onValueChange={(posto: any) => {
                                             onChange(posto)
                                         }}
+                                        isDisabled={user?.user.tipo_usuario === 'ADMINISTRADOR' && !empresa}
                                     >
                                         {postos.map((posto: any) => (
                                             <Select.Item
@@ -214,6 +291,7 @@ export function FormUsuarios() {
                                         onValueChange={(value: any) => {
                                             onChange(value)
                                         }}
+                                        isDisabled={user?.user.tipo_usuario === 'ADMINISTRADOR' && !empresa}
                                     >
                                         {tiposUsuarios.map((tipo: any) => (
                                             <Select.Item
@@ -228,7 +306,7 @@ export function FormUsuarios() {
                             />
                             {errors.posto_id && <Text color="danger.500">Campo obrigatório</Text>}
                         </VStack>
-                        <Button title="Salvar" mt="6" onPress={handleSubmit(handleSave)} />
+                        <CustomButton title="Salvar" mt="6" onPress={handleSubmit(handleSave)} />
                     </VStack>
                 </ScrollView>
             }

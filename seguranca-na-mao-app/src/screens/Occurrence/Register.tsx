@@ -10,7 +10,7 @@ import { api } from "../../config/api";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../contexts/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../../components/Button";
+import CustomButton from "../../components/CustomButton";
 
 type FormData = {
   titulo: string;
@@ -42,8 +42,9 @@ export default function RegisterOccurrence() {
         quality: 1,
         base64: true
       });
-
+      // @ts-ignore
       if (!result.cancelled) {
+        // @ts-ignore
         setValue("fotos", result.assets);
       }
     } else {
@@ -146,7 +147,7 @@ export default function RegisterOccurrence() {
           )}
           name="descricao"
         />
-        <Button title="Selecionar data" w="60%" mt="6" onPress={() => setIsOpenData(true)} />
+        <CustomButton title="Selecionar data" w="60%" mt="6" onPress={() => setIsOpenData(true)} />
         <Controller
           control={control}
           render={({ field: { onChange, value } }) => (
@@ -167,9 +168,9 @@ export default function RegisterOccurrence() {
           )}
           name="data_selecionada"
         />
-        <Button title="Selecionar foto" w="60%" mt="6" onPress={pickImage} />
+        <CustomButton title="Selecionar foto" w="60%" mt="6" onPress={pickImage} />
       </VStack>
-      <Button mt="10" onPress={handleSubmit(salvarOcorrencia)} title="Salvar" />
+      <CustomButton mt="10" onPress={handleSubmit(salvarOcorrencia)} title="Salvar" alignSelf="center" />
     </SafeAreaView>
   );
 }

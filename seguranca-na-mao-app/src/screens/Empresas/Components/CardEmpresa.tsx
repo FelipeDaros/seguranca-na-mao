@@ -19,7 +19,7 @@ export function CardEmpresa({ empresa, selecionar, ...rest }: Props) {
       h="12"
       mt="4"
       borderWidth={1}
-      borderColor="personColors.150"
+      borderColor="personColors.50"
       justifyContent="center"
       alignItems="center"
       borderRadius="sm"
@@ -30,7 +30,7 @@ export function CardEmpresa({ empresa, selecionar, ...rest }: Props) {
       alignSelf="center"
       {...rest}
     >
-      <Text color="personColors.150">{empresa.nome}</Text>
+      <Text color="personColors.50">{empresa.nome}</Text>
     </Pressable>
   )
 }

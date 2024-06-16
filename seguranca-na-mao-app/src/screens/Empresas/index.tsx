@@ -5,6 +5,8 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import Loading from "../../components/Loading";
 import { CardEmpresa } from "./Components/CardEmpresa";
+import CustomButton from "../../components/CustomButton";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type EmpresaProps = {
   id: number;
@@ -43,7 +45,7 @@ export function Empresas() {
   );
 
   return (
-    <VStack flex={1}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header back />
       <Text color="personColors.150" textAlign="center" fontFamily="mono" fontSize="lg" mt="4">
         Empresas
@@ -59,6 +61,8 @@ export function Empresas() {
           renderItem={({ item }) => <CardEmpresa key={item.id} empresa={item} selecionar={() => handleEmpresa(item.id)} />}
         />
       }
-    </VStack>
+      {/* @ts-ignore */}
+      <CustomButton title="Cadastrar" alignSelf="center" onPress={() => navigation.navigate('RegisterEmpresa')} />
+    </SafeAreaView>
   )
 }

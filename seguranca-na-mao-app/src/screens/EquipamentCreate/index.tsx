@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Alert, Pressable } from "react-native";
 import { api } from "../../config/api";
 import { SafeAreaView } from "react-native-safe-area-context";
+import axios from "axios";
 
 export function EquipamentCreate() {
   const [equipamentos, setEquipamentos] = useState<string[]>([]);
@@ -26,9 +27,22 @@ export function EquipamentCreate() {
       return;
     }
 
-    setEquipamentos([...equipamentos, equipamento]);
+    // Verifica se o equipamento já está na lista
+    if (equipamentos.some((e) => e === equipamento.toUpperCase())) {
+      toast.show({
+        title: "Equipamento já existe na lista",
+        duration: 3000,
+        bg: "red.500",
+        placement: "top",
+      });
+      return;
+    }
+
+    // Adiciona o novo equipamento à lista
+    setEquipamentos([...equipamentos, equipamento.toUpperCase()]);
     setEquipamento("");
   }
+
 
   async function removerEquipamento(nome: string) {
     const equipamentosAlterados = equipamentos.filter((item) => item !== nome);
@@ -60,22 +74,30 @@ export function EquipamentCreate() {
         bg: "green.500",
         placement: "top",
       });
-    } catch (error) {
+    } catch (error: any) {
+      if(axios.isAxiosError(error)){
+        return toast.show({
+          title: error.response?.data.message,
+          duration: 3000,
+          bg: "red.500",
+          placement: "top",
+        });
+      }
       toast.show({
         title: "Erro ao cadastrar os equipamentos",
         duration: 3000,
         bg: "red.500",
         placement: "top",
       });
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, position: 'relative' }}>
       <Header back />
-      <VStack alignItems="center" justifyContent="center" mt="4">
+      <VStack alignItems="center" justifyContent="center" mt="4" mb="4">
         <Text fontFamily="mono" color="personColors.150" fontSize="lg">
           Cadastrar Equipamento
         </Text>
@@ -95,21 +117,19 @@ export function EquipamentCreate() {
       </VStack>
       <Pressable onPress={adicionarEquipamento}>
         <Icon
-          ml="2"
           size="lg"
           as={MaterialCommunityIcons}
           color="personColors.150"
           name="plus"
-          ml="10%"
+          ml="10"
           mt="2"
         />
       </Pressable>
       <VStack ml="12%" mt="4">
         <ScrollView
-          h="40"
-          w="90%"
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
+          height="56"
         >
           {equipamentos?.length >= 1 &&
             equipamentos?.map((equipamento, index) => (
@@ -131,9 +151,7 @@ export function EquipamentCreate() {
             ))}
         </ScrollView>
       </VStack>
-      <VStack mt="40%" alignItems="center">
-        <CustomButton title="Salvar" onPress={salvarItens} isLoading={isLoading}/>
-      </VStack>
+      <CustomButton title="Salvar" onPress={salvarItens} isLoading={isLoading} mt="4" bottom={0} alignSelf="center" />
     </SafeAreaView>
   );
 }

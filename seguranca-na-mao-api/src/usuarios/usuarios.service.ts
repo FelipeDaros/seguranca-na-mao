@@ -50,14 +50,17 @@ export class UsuariosService {
     }
   }
 
-  public async findAll(tipo_usuario: string, empresa_id: number) {
+  public async findAll(tipo_usuario: string, empresa_id: number, id_logado: string) {
     let usuarios = [];
 
     if(tipo_usuario === 'SUPERVISOR'){
       usuarios = await prisma.usuario.findMany({
         where: {
           empresa_id,
-          tipo_usuario: 'VIGILANTE'
+          tipo_usuario: 'VIGILANTE',
+          id: {
+            not: id_logado
+          }
         }
       });
     }
@@ -66,6 +69,9 @@ export class UsuariosService {
       usuarios = await prisma.usuario.findMany({
         where: {
           empresa_id,
+          id: {
+            not: id_logado
+          }
         }
       });
     }

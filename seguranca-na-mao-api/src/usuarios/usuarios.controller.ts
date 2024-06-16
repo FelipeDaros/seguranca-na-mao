@@ -26,9 +26,9 @@ export class UsuariosController {
     return this.usuariosService.create(createUsuarioDto);
   }
 
-  @Get(':tipo_usuario/:id')
-  public async findAll(@Param('tipo_usuario') tipo_usuario: string, @Param('id') id: string) {
-    return this.usuariosService.findAll(tipo_usuario, +id);
+  @Get(':tipo_usuario/:id/:id_logado')
+  public async findAll(@Param('tipo_usuario') tipo_usuario: string, @Param('id') id: string, @Param('id_logado') id_logado: string) {
+    return this.usuariosService.findAll(tipo_usuario, +id, id_logado);
   }
 
   @Get('/find/:id')

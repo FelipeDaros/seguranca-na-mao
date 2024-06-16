@@ -23,6 +23,7 @@ import { Empresas } from "../screens/Empresas";
 import { EmpresaSelecionada } from "../screens/Empresas/EmpresaSelecionada";
 import { FinishDay } from "../screens/FinishDay";
 import { Onboarding } from "../screens/Onboarding";
+import { RegisterEmpresa } from "../screens/Empresas/RegisterEmpresa";
 
 const tiposUsuarios = [
   "SUPERVISOR",
@@ -59,6 +60,7 @@ export function AuthRoutes() {
           <Screen name="RelatorioAlertas" component={RelatorioAlertas} />
           <Screen name="Empresas" component={Empresas} />
           <Screen name="EmpresaSelecionada" component={EmpresaSelecionada} />
+          <Screen name="RegisterEmpresa" component={RegisterEmpresa} />
         </Group>
       }
     </Navigator>

@@ -21,14 +21,14 @@ model Usuario {
   posto_id           Int?
   updated_at         DateTime?
   isAdmin            Boolean              @default(false)
-  ultimo_login        DateTime             @default(now())
+  ultimo_login       DateTime             @default(now())
   estaLogado         Boolean              @map("esta_logado")
   empresa_id         Int?
   ultima_ronda       DateTime?
   horario_alerta     DateTime?
   tipo_usuario       String?
   status_logado      String?
-  welcome_screen     Boolean @default(false)
+  welcome_screen     Boolean              @default(false)
   Panico             Panico[]
   Servico            Servico[]
   RegistroOcorrencia RegistroOcorrencia[]
@@ -40,13 +40,18 @@ model Usuario {
 }
 
 model Empresa {
-  id      Int       @id @default(autoincrement())
-  nome    String
-  cidade  String
-  estado  String
-  Servico Servico[]
-  Posto   Posto[]
-  Panico  Panico[]
+  id          Int       @id @default(autoincrement())
+  nome        String
+  cidade      String
+  estado      String    @db.VarChar(2)
+  documento   String?   @db.VarChar(14)
+  responsavel String?
+  contato     String?   @db.VarChar(11)
+  endereco    String?
+  email       String?
+  Servico     Servico[]
+  Posto       Posto[]
+  Panico      Panico[]
 
   @@map("empresa")
 }
@@ -179,7 +184,7 @@ model Alerta {
 
   Servico    Servico? @relation(fields: [servico_id], references: [id])
   servico_id Int
-  created_at DateTime @default(now())
+  created_at String
 
   @@map("alerta")
 }

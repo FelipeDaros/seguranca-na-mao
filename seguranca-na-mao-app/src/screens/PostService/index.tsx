@@ -17,8 +17,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../../components/Button";
 import axios from "axios";
+import CustomButton from "../../components/CustomButton";
 
 type FormData = {
   nome: string;
@@ -63,8 +63,8 @@ export default function PostService() {
       const { data } = await api.get("/equipamentos");
       setEquipaments(data);
     } catch (error) {
-      if(axios.isAxiosError(error)){
-        if(error.code === "401"){
+      if (axios.isAxiosError(error)) {
+        if (error.code === "401") {
           signOut();
           toast.show({
             title: "Você precisa efetuar o login!",
@@ -74,15 +74,15 @@ export default function PostService() {
           });
           return;
         }
-        
-        if(error.response){
+
+        if (error.response) {
           toast.show({
             title: error.response.data.message,
             duration: 3000,
             bg: "error.500",
             placement: "top",
           });
-  
+
           return;
         }
       }
@@ -186,13 +186,13 @@ export default function PostService() {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header back />
-      <VStack alignItems="center" justifyItems="center" mt="4">
+      <VStack alignItems="center" mt="4">
         <Text fontFamily="mono" color="personColors.150" fontSize="lg">
           Cadastrar Posto
         </Text>
-        <VStack mt="15%">
+        <VStack mt="6">
           <Controller
             control={control}
             rules={{
@@ -240,15 +240,16 @@ export default function PostService() {
             name="empresa_nome"
           />
           <VStack>
+            <Text color="personColors.150" fontFamily="body" fontSize="md" mt={2}>
+              Selecione os equipamentos abaixo
+            </Text>
             <ScrollView
-              maxH="72"
-              w="90%"
+              maxH="56"
+              mb="4"
+              mt="4"
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
             >
-              <Text color="personColors.150" fontFamily="body" fontSize="md" mt={2}>
-                Selecione os equipamentos abaixo
-              </Text>
               {equipaments?.length >= 1 &&
                 equipaments?.map((equipaments, index) => (
                   <Box
@@ -304,12 +305,12 @@ export default function PostService() {
             </ScrollView>
           </VStack>
         </VStack>
+        <CustomButton
+          title="Cadastrar"
+          isLoading={isLoading}
+          onPress={handleSubmit(handleSave)}
+        />
       </VStack>
-      <Button
-        title="Cadastrar"
-        isLoading={isLoading}
-        onPress={handleSubmit(handleSave)}
-      />
     </SafeAreaView>
   );
 }

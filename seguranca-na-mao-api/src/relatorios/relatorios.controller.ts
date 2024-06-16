@@ -9,7 +9,7 @@ export class RelatoriosController {
 
   @Get('alertas')
   public async buscarAlertas(@Query() relatorioAlertaDto: RelatorioAlertaDto) {
-    return await this.relatoriosService.buscarAlertas(relatorioAlertaDto);
+    // return await this.relatoriosService.buscarAlertas(relatorioAlertaDto);
   }
 
   @Get('ronda')

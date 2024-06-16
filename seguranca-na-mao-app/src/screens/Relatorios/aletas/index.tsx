@@ -11,8 +11,6 @@ import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 import { api } from "../../../config/api";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../../../components/Button";
-
 
 type Props = 'inicial' | 'final';
 
@@ -140,12 +138,12 @@ export function RelatorioAlertas() {
         </Text>
         <Text color="personColors.150" fontFamily="body" fontSize="md" my="4">Data inicial</Text>
         <CustomInput my="2" isDisabled value={dataInicial ? moment(dataInicial).format('DD-MM-YYYY') : ""} />
-        <Button title="Selecionar" w="80%" bg="personColors.50" onPress={() => {
+        <CustomButton title="Selecionar" w="80%" bg="personColors.50" onPress={() => {
           handleOpenDateTimePicker('inicial');
-        }}>Selecionar</Button>
+        }}>Selecionar</CustomButton>
         <Text color="personColors.150" fontFamily="body" fontSize="md" my="4">Data Final</Text>
         <CustomInput my="2" isDisabled value={dataFinal ? moment(dataFinal).format('DD-MM-YYYY') : ""} />
-        <Button title="Selecionar" w="80%" bg="personColors.50" onPress={() => {
+        <CustomButton title="Selecionar" w="80%" bg="personColors.50" onPress={() => {
           handleOpenDateTimePicker("final");
         }} />
       </VStack>
@@ -164,7 +162,7 @@ export function RelatorioAlertas() {
         setIsShowDateTimePickerFinal(false);
       }} />}
 
-      <Button isLoading={isLoading} onPress={gerarPdf} title="Gerar" alignSelf="center" mt="10"/>
+      <CustomButton isLoading={isLoading} onPress={gerarPdf} title="Gerar" alignSelf="center" mt="10"/>
     </SafeAreaView>
   );
 }

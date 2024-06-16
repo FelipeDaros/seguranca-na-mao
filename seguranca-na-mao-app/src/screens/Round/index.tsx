@@ -1,32 +1,29 @@
 import { FlatList, Text, VStack, useToast } from "native-base";
 import Header from "../../components/Header";
 import { useCallback, useState } from "react";
-import { FlashList } from "@shopify/flash-list";
 import { Cards } from "./Components/Cards";
 import Loading from "../../components/Loading";
 import { useAuth } from "../../contexts/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
-import { GerarRondas } from "../../libs/realms/schemas/Rondas";
-import { useQuery } from "../../libs/realms";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { PropsRonda, getAllRondas } from "../../store/RondaStorage";
 
 export function Round() {
   const [isLoading, setIsLoading] = useState(false);
-  const [rondas, setRondas] = useState<GerarRondas[] | null>([]);
+  const [rondas, setRondas] = useState<PropsRonda[]>([]);
   const { user, signOut } = useAuth();
   const toast = useToast();
 
-  const rondasSchema = useQuery(GerarRondas);
   useFocusEffect(
     useCallback(() => {
       buscarRondas();
     }, [])
   );
-    
+
   async function buscarRondas() {
     setIsLoading(true);
     try {
-      const data = rondasSchema.filter(item => !item.isSincronized);
+      const data = (await getAllRondas()).filter(item => !item.isSincronized);
 
       setRondas(data);
     } catch (error: any) {
@@ -46,7 +43,7 @@ export function Round() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <Header back />
       <VStack mt="2" justifyItems="center" alignItems="center">
         <Text
@@ -63,7 +60,7 @@ export function Round() {
       ) : (
         <FlatList
           data={rondas}
-          renderItem={({ item }) => <Cards item={item} fetchRondas={buscarRondas}/>}
+          renderItem={({ item }) => <Cards item={item} fetchRondas={buscarRondas} />}
         />
       )}
     </SafeAreaView>

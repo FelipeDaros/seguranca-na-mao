@@ -6,7 +6,7 @@ import prisma from 'src/prisma.service';
 @Injectable()
 export class EmpresaService {
   constructor() { }
-  public async create({ cidade, estado, nome }: CreateEmpresaDto) {
+  public async create({ cidade, estado, nome, contato, documento, email, endereco, responsavel }: CreateEmpresaDto) {
     const empresa = await prisma.empresa.findFirst({
       where: {
         nome,
@@ -22,6 +22,11 @@ export class EmpresaService {
         cidade,
         estado,
         nome,
+        contato,
+        documento,
+        email,
+        endereco,
+        responsavel
       },
     });
 

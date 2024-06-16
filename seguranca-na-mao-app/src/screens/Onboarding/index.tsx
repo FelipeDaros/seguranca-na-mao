@@ -80,31 +80,31 @@ export function Onboarding() {
     },
     {
       backgroundColor: '#fff',
-      image: <Image source={Image1} alt="image" style={{width: 200, height: 400}}/>,
+      image: <Image source={Image1} alt="image" style={{width: 200, height: 380}}/>,
       title: 'Alertas',
       subtitle: 'O botão retratado na imagem acima é onde você emitirá seus alertas de vigilância.',
     },
     {
       backgroundColor: '#fff',
-      image: <Image source={Image2} alt="image" style={{width: 200, height: 400}}/>,
+      image: <Image source={Image2} alt="image" style={{width: 200, height: 380}}/>,
       title: 'Rondas',
       subtitle: 'Suas rondas estão localizadas no card destacado acima na imagem.',
     },
     {
       backgroundColor: '#fff',
-      image: <Image source={Image3} alt="image" style={{width: 200, height: 400}}/>,
+      image: <Image source={Image3} alt="image" style={{width: 200, height: 380}}/>,
       title: 'Emergência',
       subtitle: 'Em caso de emergência durante o serviço, pressione e segure o card destacado acima na imagem por alguns segundos.',
     },
     {
       backgroundColor: '#fff',
-      image: <Image source={Image4} alt="image" style={{width: 200, height: 400}}/>,
+      image: <Image source={Image4} alt="image" style={{width: 200, height: 380}}/>,
       title: 'Ocorrência',
       subtitle: 'Para registrar uma ocorrência durante o serviço, basta acessar o card mencionado acima.',
     },
     {
       backgroundColor: '#fff',
-      image: <Image source={Image5} alt="image" style={{width: 200, height: 400}}/>,
+      image: <Image source={Image5} alt="image" style={{width: 200, height: 380}}/>,
       title: 'Expediente',
       subtitle: 'Para encerrar o expediente, pressione o botão ao lado de sua foto e selecione a opção "Finalizar expediente" conforme indicado na imagem mencionada acima.',
     },
@@ -118,7 +118,7 @@ export function Onboarding() {
         NextButtonComponent={Next}
         DoneButtonComponent={Done}
         DotComponent={Dot}
-        bottomBarHeight={50}
+        bottomBarHeight={40}
         onDone={handleFinishOnboarding}
       />
     </SafeAreaView>

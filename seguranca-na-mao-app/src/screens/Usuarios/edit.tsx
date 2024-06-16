@@ -9,7 +9,7 @@ import { IPosto } from "../../interfaces/IPosto";
 import Loading from "../../components/Loading";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../../components/Button";
+import CustomButton from "../../components/CustomButton";
 
 interface IUser {
     nome: string;
@@ -65,6 +65,7 @@ export function EditUsuarios() {
     }
 
     async function fetchUser() {
+        // @ts-ignore
         const { data } = await api.get(`/usuarios/find/${route.params.id}`);
         setValue('nome', data.nome);
         setValue('senha', data.senha);
@@ -76,6 +77,7 @@ export function EditUsuarios() {
     async function handleSave({ email, nome, senha, posto_id, tipo_usuario }: IUser) {
         try {
             setIsLoading(true);
+            // @ts-ignore
             await api.put(`/usuarios/${route.params.id}`, {
                 nome,
                 senha,
@@ -119,7 +121,7 @@ export function EditUsuarios() {
     }, []);
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{flex: 1}}>
             <Header back />
             {isLoading &&
                 <VStack flex={1} justifyContent="center" alignItems="center" mt="4">
@@ -242,7 +244,7 @@ export function EditUsuarios() {
                             />
                             {errors.posto_id && <Text color="danger.500">Campo obrigatório</Text>}
                         </VStack>
-                        <Button title="Salvar" mt="6" onPress={handleSubmit(handleSave)} />
+                        <CustomButton title="Salvar" mt="6" onPress={handleSubmit(handleSave)} />
                     </VStack>
                 </ScrollView>
             }

@@ -13,7 +13,7 @@ type Props = {
   input: boolean;
 }
 
-export function CustomAlert({ content, title, isVisible, titleBotao, input = false,onClick, onClose }: Props) {
+export function CustomAlert({ content, title, isVisible, titleBotao, input = false, onClick, onClose }: Props) {
   const cancelRef = useRef(null);
   const [motivo, setMotivo] = useState(""); // Adiciona um estado para o valor do input
 

@@ -8,6 +8,7 @@ import Header from "../../components/Header";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CustomButton from "../../components/CustomButton";
 
 interface Configuracoes {
     id: number;
@@ -118,7 +119,7 @@ export default function RegisterConfiguracoes({ route }: any) {
                                 mt="2"
                             />
                         </Pressable>}
-                    <Button my="4" alignSelf="center" w="70%" onPress={handleEdit}>Salvar</Button>
+                    <CustomButton title="Salvar" alignSelf="center" mt="4" onPress={handleEdit}/>
                 </ScrollView>
             </ScrollView>
         </SafeAreaView>

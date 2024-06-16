@@ -1,18 +1,22 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { Button, Select, Text, VStack, useToast } from "native-base";
+import { Button, ScrollView, Select, Text, VStack, useToast } from "native-base";
 import { useCallback, useState } from "react";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
 import { api } from "../../config/api";
 import CustomInput from "../../components/CustomInput";
+import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
-import CustomSelect from "../../components/CustomSelect";
 
 type EmpresaProps = {
-  id: number;
-  cidade: string;
-  estado: string;
   nome: string;
+  estado: string;
+  cidade: string;
+  documento: string;
+  responsavel: string;
+  contato: string;
+  endereco: string;
+  email: string;
 }
 
 export function EmpresaSelecionada(props: any) {
@@ -78,14 +82,10 @@ export function EmpresaSelecionada(props: any) {
   );
 
   return (
-    <VStack flex={1}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header back />
-      <Text color="personColors.150" textAlign="center" fontFamily="mono" fontSize="lg" mt="4">
-        Empresa Selecionada
-      </Text>
-      {loading && <Loading />}
-      {!loading &&
-        <VStack alignItems="center" mt="8">
+      <ScrollView>
+        <VStack alignItems="center" mt="8" mb="8">
           <Text color="personColors.150" fontFamily="body" fontSize="md">
             Nome empresa
           </Text>
@@ -94,6 +94,9 @@ export function EmpresaSelecionada(props: any) {
             mt="2"
             onChangeText={(value) => setEmpresa({ ...empresa, nome: value })}
             value={empresa.nome}
+            _input={{
+              maxLength: 250
+            }}
           />
           <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
             Estado
@@ -117,17 +120,83 @@ export function EmpresaSelecionada(props: any) {
             mt="2"
             onChangeText={(value) => setEmpresa({ ...empresa, cidade: value })}
             value={empresa.cidade}
+            _input={{
+              maxLength: 150
+            }}
           />
-          <Button
+          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
+            Responsável
+          </Text>
+          <CustomInput
+            bg="white"
+            mt="2"
+            onChangeText={(value) => setEmpresa({ ...empresa, responsavel: value })}
+            value={empresa.responsavel}
+            _input={{
+              maxLength: 100
+            }}
+          />
+          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
+            Documento
+          </Text>
+          <CustomInput
+            bg="white"
+            mt="2"
+            placeholder="CNPJ/CPF somente números"
+            onChangeText={(value) => setEmpresa({ ...empresa, documento: value })}
+            value={empresa.documento}
+            _input={{
+              maxLength: 14
+            }}
+          />
+          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
+            Contato
+          </Text>
+          <CustomInput
+            bg="white"
+            mt="2"
+            placeholder="00000000000"
+            onChangeText={(value) => setEmpresa({ ...empresa, contato: value })}
+            value={empresa.contato}
+            _input={{
+              maxLength: 11
+            }}
+          />
+          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
+            Endereço
+          </Text>
+          <CustomInput
+            bg="white"
+            mt="2"
+            placeholder="Bairro/Rua/Numero"
+            onChangeText={(value) => setEmpresa({ ...empresa, endereco: value })}
+            value={empresa.endereco}
+            _input={{
+              maxLength: 250
+            }}
+          />
+          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
+            Email
+          </Text>
+          <CustomInput
+            bg="white"
+            mt="2"
+            placeholder="exemplo@exemplo.com"
+            onChangeText={(value) => setEmpresa({ ...empresa, email: value })}
+            value={empresa.email}
+            _input={{
+              maxLength: 250
+            }}
+          />
+          <CustomButton
             onPress={handleUpdate}
             bg="personColors.50"
             w="80%"
             mt="6"
-          >
-            Salvar
-          </Button>
+            title="Salvar"
+          />
         </VStack>
-      }
-    </VStack>
+      </ScrollView>
+    </SafeAreaView>
   )
 }

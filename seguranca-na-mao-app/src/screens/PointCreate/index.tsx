@@ -11,6 +11,7 @@ import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import axios from "axios";
 
 type FormData = {
   nome: string;
@@ -38,7 +39,7 @@ export default function PointCreate() {
 
   async function buscarLocalizacao() {
     setProgress(25);
-    
+
     let { status } = await Location.requestForegroundPermissionsAsync();
 
     setProgress(50);
@@ -73,18 +74,17 @@ export default function PointCreate() {
       });
       reset();
       navigation.goBack();
-    } catch (error: any) {
-      if (error.response.status === 401) {
-        signOut();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
         toast.show({
-          title: "Você precisa efetuar o login!",
+          title: error.response?.data.message,
           duration: 3000,
           bg: "error.500",
           placement: "top",
         });
         return;
       }
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   }
@@ -95,7 +95,7 @@ export default function PointCreate() {
 
   async function buscarPostoVinculadoAoUsuario() {
     try {
-      const {data} = await api.get(`/posto-servico/${user?.user.empresa_id}`);
+      const { data } = await api.get(`/posto-servico/${user?.user.empresa_id}`);
       setData(data);
     } catch (error: any) {
       if (error.response.status === 401) {
@@ -159,14 +159,7 @@ export default function PointCreate() {
           <Text fontFamily="mono">Geolocalização</Text>
           <Progress value={progress} mx="4" w="64" mt="4" />
         </VStack>
-      </VStack>
-      <VStack
-        alignItems="center"
-        justifyItems="center"
-        position="relative"
-        flex={1}
-      >
-        <CustomButton isLoading={isLoading} title="Salvar" onPress={handleSubmit(handleSave)} />
+        <CustomButton isLoading={isLoading} title="Salvar" onPress={handleSubmit(handleSave)} mt="6" />
       </VStack>
     </SafeAreaView>
   );

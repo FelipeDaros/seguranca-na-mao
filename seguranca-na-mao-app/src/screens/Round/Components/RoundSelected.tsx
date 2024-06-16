@@ -7,11 +7,9 @@ import CustomButton from "../../../components/CustomButton";
 import Header from "../../../components/Header";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
-import { useQuery, useRealm } from "../../../libs/realms";
-import { Pontos } from "../../../libs/realms/schemas/Pontos";
-import { GerarRondas } from "../../../libs/realms/schemas/Rondas";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../../../components/Button";
+import { getAllPontos } from "../../../store/PontoStorage";
+import { getAllRondas } from "../../../store/RondaStorage";
 
 export function RoundSelected(props: any) {
   const toast = useToast();
@@ -22,16 +20,7 @@ export function RoundSelected(props: any) {
   const [statusLocation, setStatusLocation] = useState(false);
   const [dadosQrCode, setDadosQrCode] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const _id = props.route.params as any;
-
-  const realm = useRealm();
-
-  const pontosSchema = useQuery(Pontos);
-  const rondasSchema = useQuery(GerarRondas);
-
-  const rondaSelecionada = rondasSchema.find(item => item._id === _id);
-
-  const pontoSelecionado = pontosSchema.find(item => item._id === rondaSelecionada?.ponto_id);
+  const id = props.route.params as any;
 
   async function handleVerificar() {
 
@@ -44,6 +33,10 @@ export function RoundSelected(props: any) {
     const latitidadeMenos = Number(String(coords.latitude).replace("-", "")) * 0.996;
     const latitidadeMais = Number(String(coords.latitude).replace("-", "")) * 1.002;
 
+    const rondaSelecionada = (await getAllRondas()).find(item => item.id === id);
+
+    const pontoSelecionado = (await getAllPontos()).find(item => rondaSelecionada?.ponto_id)
+
     if (pontoSelecionado) {
       try {
         if (
@@ -52,9 +45,7 @@ export function RoundSelected(props: any) {
           String(dadosQrCode).toUpperCase() ===
           String(pontoSelecionado.nome).toUpperCase()
         ) {
-          realm.write(() => {
-            realm.create('GerarRondas', { _id: _id, verificado: true, isSincronized: true }, Realm.UpdateMode.Modified);
-          });
+          
 
           toast.show({
             title: "Ponto verificado!",
@@ -112,7 +103,7 @@ export function RoundSelected(props: any) {
       <Header back />
       <VStack alignItems="center" justifyContent="center">
         <Text color="personColors.150" fontFamily="heading" fontSize="md" mt="2">
-          Nome do ponto: {pontoSelecionado?.nome}
+          Escanie o QRCODE
         </Text>
         {statusCamera && (
           <BarCodeScanner
@@ -122,7 +113,7 @@ export function RoundSelected(props: any) {
         )}
       </VStack>
       {scanned && (
-        <Button
+        <CustomButton
           title="Enviar dados"
           onPress={handleVerificar}
           isLoading={loading}

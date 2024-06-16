@@ -82,10 +82,6 @@ export class ImportAppService {
                 include: {
                     Alerta: {
                         where: {
-                            created_at: {
-                                gte: moment().subtract(12, "h").toDate(),
-                                lte: agora,
-                            },
                             servico_id: servico.id
                         }
                     },

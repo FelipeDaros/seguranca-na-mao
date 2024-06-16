@@ -26,62 +26,62 @@ export class JobsService {
         return rondas;
     }
 
-    public async gerarRondas() {
-        const usuarios = await prisma.usuario.findMany({
-            where: {
-                tipo_usuario: 'VIGILANTE'
-            },
-            include: {
-                Configuracoes: true
-            }
-        });
+    // public async gerarRondas() {
+    //     const usuarios = await prisma.usuario.findMany({
+    //         where: {
+    //             tipo_usuario: 'VIGILANTE'
+    //         },
+    //         include: {
+    //             Configuracoes: true
+    //         }
+    //     });
         
-        usuarios.forEach(async (usuario) => {
-            const horario = horarioAtualConfigurado();
+    //     usuarios.forEach(async (usuario) => {
+    //         const horario = horarioAtualConfigurado();
             
-            const rondasEmAberto = await prisma.gerarRondas.findMany({
-                where: {
-                    usuario_id: usuario.id,
-                    verificado: false
-                }
-            });
+    //         const rondasEmAberto = await prisma.gerarRondas.findMany({
+    //             where: {
+    //                 usuario_id: usuario.id,
+    //                 verificado: false
+    //             }
+    //         });
             
-            if (!!rondasEmAberto && rondasEmAberto.length) {
-                return;
-            }
+    //         if (!!rondasEmAberto && rondasEmAberto.length) {
+    //             return;
+    //         }
 
-            const diferenca = moment(horario).diff(usuario.ultimo_login, 'hours');
+    //         const diferenca = moment(horario).diff(usuario.ultimo_login, 'hours');
             
-            if (diferenca >= 12) {
-                return;
-            }
+    //         if (diferenca >= 12) {
+    //             return;
+    //         }
 
-            const config = usuario.Configuracoes.find(config => config?.tipo === 'RONDA');
+    //         const config = usuario.Configuracoes.find(config => config?.tipo === 'RONDA');
             
-            if (!config) {
-                return;
-            }
+    //         if (!config) {
+    //             return;
+    //         }
 
-            const diffUltimaRonda = usuario?.ultima_ronda ? moment(horario).diff(usuario?.ultima_ronda, config.parametro as any) : 60;
+    //         const diffUltimaRonda = usuario?.ultima_ronda ? moment(horario).diff(usuario?.ultima_ronda, config.parametro as any) : 60;
 
-            if (Number(diffUltimaRonda) < Number(config.valor)) {
-                return;
-            }
+    //         if (Number(diffUltimaRonda) < Number(config.valor)) {
+    //             return;
+    //         }
             
-            await this.gerarRondasService.create(usuario.id);
+    //         await this.gerarRondasService.create(usuario.id);
 
-            await this.pushNotificationsService.sendNotificationsRondasCreated(usuario);
+    //         await this.pushNotificationsService.sendNotificationsRondasCreated(usuario);
 
-            usuario.ultima_ronda = horarioAtualConfigurado();
+    //         usuario.ultima_ronda = horarioAtualConfigurado();
 
-            await prisma.usuario.update({
-                data: {
-                    ultima_ronda: usuario.ultima_ronda
-                },
-                where: {
-                    id: usuario.id
-                }
-            });
-        });
-    }
+    //         await prisma.usuario.update({
+    //             data: {
+    //                 ultima_ronda: usuario.ultima_ronda
+    //             },
+    //             where: {
+    //                 id: usuario.id
+    //             }
+    //         });
+    //     });
+    // }
 }

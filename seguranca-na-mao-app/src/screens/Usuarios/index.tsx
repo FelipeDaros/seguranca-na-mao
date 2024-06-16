@@ -21,7 +21,7 @@ export function Usuarios() {
         try {
             setIsLoading(true);
             // @ts-ignore
-            const { data } = await api.get(`usuarios/${user.user.tipo_usuario}/${user?.user.empresa_id}`);
+            const { data } = await api.get(`usuarios/${user.user.tipo_usuario}/${user?.user.empresa_id}/${user?.user.id}`);
             setUsuarios(data);
         } catch (error) {
             toast.show({

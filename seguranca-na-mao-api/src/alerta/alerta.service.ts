@@ -3,7 +3,7 @@ import { Alerta, GerarRondas } from '@prisma/client';
 import 'moment/locale/pt-br';
 import { GerarRondasService } from 'src/gerar-rondas/gerar-rondas.service';
 import prisma from 'src/prisma.service';
-import { horarioAtualConfigurado } from 'src/utils/datetime';
+import { horarioAtualConfigurado, momentoAtualString } from 'src/utils/datetime';
 
 @Injectable()
 export class AlertaService {
@@ -15,7 +15,7 @@ export class AlertaService {
                 data: {
                     usuario_id,
                     servico_id,                
-                    created_at: horarioAtualConfigurado()
+                    created_at: momentoAtualString()
                 }
             });
 

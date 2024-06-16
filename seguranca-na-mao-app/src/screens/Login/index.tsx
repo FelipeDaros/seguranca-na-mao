@@ -32,8 +32,8 @@ export default function Login() {
       setLoading(true);
       Keyboard.dismiss();
       const { data } = await api.post("/auth", {
-        nome: form.nome,
-        senha: form.senha
+        nome: form.nome.trim(),
+        senha: form.senha.trim()
       });
       await signIn(data, data.ultimoServico);
 
@@ -48,6 +48,7 @@ export default function Login() {
 
       return;
     } catch (error: any) {
+      console.log(error.response)
       if (!!error.response) {
         toast.show({
           title: error.response.data.message,
@@ -70,7 +71,7 @@ export default function Login() {
 
   return (
     <VStack flex={1} justifyContent="center" alignItems="center">
-      <VStack justifyContent="center" alignItems="center" flex={1}>
+      <VStack justifyContent="center" alignItems="center">
         <Text fontFamily="heading" fontSize="2xl" color="personColors.200">
           Bem vindo
         </Text>
@@ -153,18 +154,12 @@ export default function Login() {
           </Text>
         )}
       </VStack>
-      <VStack
-        alignItems="center"
-        justifyItems="center"
-        position="relative"
-        flex={1}
-      >
-        <CustomButton
-          title="Entrar"
-          isLoading={loading}
-          onPress={handleSubmit(login)}
-        />
-      </VStack>
+      <CustomButton
+        title="Entrar"
+        isLoading={loading}
+        onPress={handleSubmit(login)}
+        mt="10"
+      />
     </VStack>
   );
 }

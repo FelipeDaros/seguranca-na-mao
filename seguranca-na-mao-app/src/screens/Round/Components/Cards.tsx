@@ -2,26 +2,32 @@ import { Box, HStack, Icon, Row, Text, VStack } from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useRealm } from "../../../libs/realms";
 import { useState } from "react";
 import { CustomAlert } from "../../../components/Alert/CustomAlert";
+import { getAllRondas, updateRonda } from "../../../store/RondaStorage";
 
 export function Cards(props: any) {
   const [isVisible, setIsVisible] = useState(false);
-  const [rondaSelecionadaId, setRondaSelecionadaId] = useState(null);
+  const [rondaSelecionadaId, setRondaSelecionadaId] = useState<number | null>(null);
   const navigation = useNavigation();
-  const realm = useRealm();
 
   function handleRound(id: any) {
     //@ts-ignore
     navigation.navigate("RoundSelected", id);
   }
 
-  function handleDelete(motivo: string) {
-    realm.write(() => {
-      realm.create('GerarRondas', { _id: rondaSelecionadaId, isSincronized: true, motivo, cancelado: true }, Realm.UpdateMode.Modified);
-    });
+  async function handleDelete(motivo: string) {
+    const ronda = ((await getAllRondas()).find(item => item.id === rondaSelecionadaId));
 
+    const rondaUpdate = {
+      ...ronda,
+      isSincronized: true,
+      cancelado: true,
+      motivo
+    }
+
+    // @ts-ignore
+    await updateRonda(rondaUpdate);
     onClose();
     props.fetchRondas();
   }
@@ -56,7 +62,7 @@ export function Cards(props: any) {
           Local: {props.item?.nome}
         </Text>
         <Row justifyContent="space-around" m="4" w="24">
-          <TouchableOpacity onPress={() => handleRound(props.item._id)}>
+          <TouchableOpacity onPress={() => handleRound(props.item.id)}>
             <Icon
               size={6}
               as={MaterialCommunityIcons}
@@ -66,7 +72,7 @@ export function Cards(props: any) {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {
             setIsVisible(true)
-            setRondaSelecionadaId(props.item._id)
+            setRondaSelecionadaId(props.item.id)
           }}>
             <Icon
               size={6}
