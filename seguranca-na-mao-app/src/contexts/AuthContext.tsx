@@ -135,6 +135,7 @@ const AuthContextProvider: React.FC = ({ children }) => {
       const userParsed: IUsuario = JSON.parse(storagedUser);
 
       userParsed.ultimaRonda = data;
+      userParsed.isRondaActive = true;
 
       if (netInfo.isConnected) {
         await api.post('/usuarios/update-horario-ronda', {
@@ -173,6 +174,7 @@ const AuthContextProvider: React.FC = ({ children }) => {
         if (user.user.tipo_usuario === "VIGILANTE") {
           if (!user.user.status_logado) {
             user.user.status_logado = "CHECKLIST";
+            user.isRondaActive = false;
           }
         } else {
           user.user.status_logado = "LOGADO";

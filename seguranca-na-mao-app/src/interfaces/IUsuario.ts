@@ -20,7 +20,8 @@ export interface IUsuario {
   configuracao?: IConfiguracoes[],
   ultimaRonda?: Date;
   servico?: IServico;
-  proximaRonda: string;
+  proximaRonda?: string;
+  isRondaActive?: boolean;
 }
 
 export interface IConfiguracoes {

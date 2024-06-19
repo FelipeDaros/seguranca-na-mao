@@ -1,6 +1,5 @@
 import { FlatList, Text, VStack, useToast } from "native-base";
-import Header from "../../components/Header";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Cards } from "./Components/Cards";
 import Loading from "../../components/Loading";
 import { useAuth } from "../../contexts/AuthContext";
@@ -11,14 +10,8 @@ import { PropsRonda, getAllRondas } from "../../store/RondaStorage";
 export function Round() {
   const [isLoading, setIsLoading] = useState(false);
   const [rondas, setRondas] = useState<PropsRonda[]>([]);
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser } = useAuth();
   const toast = useToast();
-
-  useFocusEffect(
-    useCallback(() => {
-      buscarRondas();
-    }, [])
-  );
 
   async function buscarRondas() {
     setIsLoading(true);
@@ -26,6 +19,7 @@ export function Round() {
       const data = (await getAllRondas()).filter(item => !item.isSincronized);
 
       setRondas(data);
+      checkFinishRondas();
     } catch (error: any) {
       if (error.response.status === 401) {
         signOut();
@@ -42,9 +36,28 @@ export function Round() {
     }
   }
 
+  async function checkFinishRondas(){
+    const data = (await getAllRondas()).filter(item => !item.isSincronized);
+
+    if(!data.length){
+      const userUpdateFinishRondas = {
+        ...user,
+        isRondaActive: false
+      }
+      // @ts-ignore
+      await updateUser(userUpdateFinishRondas);
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      buscarRondas();
+      checkFinishRondas();
+    }, [])
+  );
+
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Header back />
       <VStack mt="2" justifyItems="center" alignItems="center">
         <Text
           color="personColors.150"
@@ -60,7 +73,7 @@ export function Round() {
       ) : (
         <FlatList
           data={rondas}
-          renderItem={({ item }) => <Cards item={item} fetchRondas={buscarRondas} />}
+          renderItem={({ item }) => <Cards item={item} fetchRondas={buscarRondas} fetchData={checkFinishRondas}/>}
         />
       )}
     </SafeAreaView>

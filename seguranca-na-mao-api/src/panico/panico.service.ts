@@ -12,11 +12,13 @@ export class PanicoService {
   public async create({
     usuario_id,
     verificado,
+    empresa_id
   }: CreatePanicoDto): Promise<CreatePanicoDto> {
     const panico = await prisma.panico.create({
       data: {
         usuario_id,
         verificado,
+        empresa_id,
         created_at: moment().add(-3, 'hours').toDate()
       },
     });

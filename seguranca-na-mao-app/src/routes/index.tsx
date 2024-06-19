@@ -1,18 +1,19 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { Box } from "native-base";
 import { AuthRoutes } from "./auth.routes";
 import { useAuth } from "../contexts/AuthContext";
 import { NoAuthRoutes } from "./noAuth.routes";
-import { useEffect, useState } from "react";
+import { RoutesRoundActive } from "./routesRoundActive";
+import { View } from "react-native";
 
 export function Routes() {
   const { user } = useAuth();
   
   return (
-    <Box flex={1} bg="white">
+    <View className="flex-1">
       <NavigationContainer>
-        {!!user ? <AuthRoutes /> : <NoAuthRoutes />}
+        {/* {!!user ? (user.isRondaActive ? <RoutesRoundActive /> : <AuthRoutes />) : <NoAuthRoutes />} */}
+        <NoAuthRoutes />
       </NavigationContainer>
-    </Box>
+    </View>
   );
 }

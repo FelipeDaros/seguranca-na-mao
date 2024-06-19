@@ -134,7 +134,6 @@ export function FormUsuarios() {
     useEffect(() => {
         if (user?.user.tipo_usuario === 'ADMINISTRADOR') {
             if (!!empresa) {
-                console.log(empresa)
                 buscarPostos(empresa);
             }
         } else {

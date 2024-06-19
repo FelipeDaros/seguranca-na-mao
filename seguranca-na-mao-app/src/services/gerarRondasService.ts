@@ -4,8 +4,9 @@ import { createRonda } from "../store/RondaStorage";
 import { generateRandomNumber } from "../utils/utils";
 import { IUsuario } from "../interfaces/IUsuario";
 
-export async function gerarRondasService(user: IUsuario){
-  const pontos = await getAllPontos();
+export async function gerarRondasService(user: IUsuario) {
+  try {
+    const pontos = await getAllPontos();
 
     pontos.forEach(async ponto => {
       await createRonda({
@@ -23,4 +24,7 @@ export async function gerarRondasService(user: IUsuario){
         verificado: false
       })
     });
+  } catch (error) {
+    throw error;
+  }
 }
