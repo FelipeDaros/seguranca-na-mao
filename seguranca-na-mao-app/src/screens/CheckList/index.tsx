@@ -1,10 +1,3 @@
-import {
-  Button,
-  HStack,
-  Progress,
-  VStack,
-  useToast,
-} from "native-base";
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { StepOne } from "./Components/StepOne";
@@ -15,12 +8,12 @@ import { api } from "../../config/api";
 import { IPosto } from "../../interfaces/IPosto";
 import { CheckListStore } from "../../store/CheckListStore";
 import Loading from "../../components/Loading";
+import { View } from "react-native";
 
 export default function CheckList() {
   const [postId, onChangeEquipamentos, onChangePreviousService, setIsLoading, equipamentosSelecionados, relatorioLido, checkListStoreClear, isLoading] = CheckListStore((state) => [state.postId, state.onChangeEquipamentos, state.onChangePreviousService, state.setIsLoading, state.equipamentosSelecionados, state.relatorioLido, state.checkListStoreClear, state.isLoading]);
 
   const { user, signOut, handleChecked } = useAuth();
-  const toast = useToast();
 
   const [step, setStep] = useState(1);
   const [postos, setPostos] = useState<IPosto[]>([] as IPosto[]);
@@ -35,12 +28,6 @@ export default function CheckList() {
     } catch (error: any) {
       if (error.response.status === 401) {
         signOut();
-        toast.show({
-          title: "Você precisa efetuar o login!",
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
         return;
       }
     } finally {
@@ -56,12 +43,6 @@ export default function CheckList() {
     } catch (error: any) {
       if (error.response.status === 401) {
         signOut();
-        toast.show({
-          title: "Você precisa efetuar o login!",
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
         return;
       }
     } finally {
@@ -77,12 +58,6 @@ export default function CheckList() {
       }
       onChangePreviousService(data);
     } catch (error) {
-      return toast.show({
-        title: "Ocorreu um erro ao tentar buscar os servicos",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
     }
   }
 
@@ -117,12 +92,6 @@ export default function CheckList() {
       handleChecked(postId, data);
       checkListStoreClear();
     } catch (error) {
-      return toast.show({
-        title: "Ocorreu um erro ao tentar finalizar o checklist",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
     } finally {
       setIsLoading();
     }
@@ -140,12 +109,12 @@ export default function CheckList() {
     <SafeAreaView>
       {isLoading && <Loading />}
       {!isLoading &&
-        <VStack justifyContent="center" alignItems="center">
-          <Progress w="80%" my="10" colorScheme="emerald" value={step === 1 ? 33.333333333 : step === 2 ? 66.666666666 : 100} />
+        <View className="items-center justify-center">
+          {/* <Progress w="80%" my="10" colorScheme="emerald" value={step === 1 ? 33.333333333 : step === 2 ? 66.666666666 : 100} /> */}
           {step === 1 && <StepOne postos={postos} />}
-          {step === 2 && <StepTwo />}
-          {step === 3 && <StepThree />}
-          <HStack justifyContent="space-around" my="10">
+          {/* {step === 2 && <StepTwo />} */}
+          {/* {step === 3 && <StepThree />} */}
+          {/* <HStack justifyContent="space-around" my="10">
             <Button bg="personColors.50" w="24" mx="12" disabled={step <= 1} onPress={() => onChangeStep('BACK')}>
               Anterior
             </Button>
@@ -159,8 +128,8 @@ export default function CheckList() {
                 Finalizar
               </Button>
             }
-          </HStack>
-        </VStack>
+          </HStack> */}
+        </View>
       }
     </SafeAreaView>
   );

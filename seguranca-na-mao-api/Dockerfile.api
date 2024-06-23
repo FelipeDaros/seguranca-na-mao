@@ -1,20 +1,18 @@
-# Use the official Node.js image as the base (choose the appropriate version for your application)
+# Dockerfile.api
 FROM node:18-alpine
 
-# Set the working directory inside the container
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
-# Copy the rest of the project files to the container
+# Instalar dotenv para ler o arquivo .env
+RUN npm install dotenv
+
 COPY . .
 
-RUN npx prisma migrate dev
+# Copiar o script wait-for-it.sh
+# COPY wait-for-it.sh /wait-for-it.sh
+# RUN chmod +x /wait-for-it.sh
 
-# Expose the port used by your Nest.js application (if needed)
-EXPOSE 3005
-
-# Command to start the Nest.js application
-CMD ["npm", "run", "start"]
+CMD ["sh", "-c", "./wait-for-it.sh banco:5432 -- npm run start"]

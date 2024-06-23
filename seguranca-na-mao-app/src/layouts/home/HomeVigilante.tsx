@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, Text, VStack, useToast } from "native-base";
+// import { Pressable, ScrollView, Text, VStack, useToast } from "native-base";
 import { useAuth } from "../../contexts/AuthContext";
 import moment from "moment-timezone";
 import Loading from "../../components/Loading";
@@ -182,7 +182,7 @@ export function HomeVigilante() {
 
   return (
     <>
-      <VStack justifyContent="center" alignItems="center" mt="4">
+      {/* <VStack justifyContent="center" alignItems="center" mt="4">
         {moment(user?.proximaRonda).isAfter(moment().format()) &&
           <>
             <Text color="personColors.150"
@@ -208,11 +208,6 @@ export function HomeVigilante() {
       </VStack>
       <VStack justifyContent="center" alignItems="center" mt="4">
         <ScrollView horizontal showsHorizontalScrollIndicator={false} m="2">
-          {/* <CardsHome
-            name="Rondas"
-            route="Round"
-            iconName="alert-circle-outline"
-          /> */}
           <CardsHome
             name="Panico"
             iconName="account-alert-outline"
@@ -224,7 +219,7 @@ export function HomeVigilante() {
             iconName="pistol"
           />
         </ScrollView>
-      </VStack>
+      </VStack> */}
     </>
   )
 }

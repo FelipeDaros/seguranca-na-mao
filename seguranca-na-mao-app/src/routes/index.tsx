@@ -7,13 +7,11 @@ import { View } from "react-native";
 
 export function Routes() {
   const { user } = useAuth();
-  
+
   return (
-    <View className="flex-1">
-      <NavigationContainer>
-        {/* {!!user ? (user.isRondaActive ? <RoutesRoundActive /> : <AuthRoutes />) : <NoAuthRoutes />} */}
-        <NoAuthRoutes />
-      </NavigationContainer>
-    </View>
+    <NavigationContainer>
+      {!!user ? (user.isRondaActive ? <RoutesRoundActive /> : <AuthRoutes />) : <NoAuthRoutes />}
+      {/* <NoAuthRoutes /> */}
+    </NavigationContainer>
   );
 }

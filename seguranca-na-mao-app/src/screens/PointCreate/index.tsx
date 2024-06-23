@@ -1,4 +1,3 @@
-import { Progress, Text, VStack, useToast } from "native-base";
 import Header from "../../components/Header";
 import { Controller, useForm } from "react-hook-form";
 import CustomInput from "../../components/CustomInput";
@@ -6,7 +5,7 @@ import CustomSelect from "../../components/CustomSelect";
 import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import * as Location from "expo-location";
-import { Alert } from "react-native";
+import { Alert, View } from "react-native";
 import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
@@ -23,7 +22,6 @@ type FormData = {
 export default function PointCreate() {
   const navigation = useNavigation();
   const { user, signOut } = useAuth();
-  const toast = useToast();
 
   const {
     control,
@@ -76,12 +74,6 @@ export default function PointCreate() {
       navigation.goBack();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.show({
-          title: error.response?.data.message,
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
         return;
       }
     } finally {
@@ -100,12 +92,6 @@ export default function PointCreate() {
     } catch (error: any) {
       if (error.response.status === 401) {
         signOut();
-        toast.show({
-          title: "Você precisa efetuar o login!",
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
         return;
       }
     }
@@ -119,11 +105,11 @@ export default function PointCreate() {
   return (
     <SafeAreaView>
       <Header back />
-      <VStack alignItems="center" justifyItems="center" mt="4">
-        <Text color="personColors.150" fontFamily="mono" fontSize="lg">
+      <View className="items-center justify-center">
+        {/* <Text color="personColors.150" fontFamily="mono" fontSize="lg">
           Cadastrar ponto
-        </Text>
-        <VStack mt="20%">
+        </Text> */}
+        {/* <VStack mt="20%">
           <Controller
             control={control}
             rules={{
@@ -154,13 +140,13 @@ export default function PointCreate() {
             Posto Vinculado
           </Text>
           <CustomSelect values={data} mt="2" selectItem={handleSelectItem} />
-        </VStack>
-        <VStack mt="12" alignItems="center">
+        </VStack> */}
+        {/* <VStack mt="12" alignItems="center">
           <Text fontFamily="mono">Geolocalização</Text>
           <Progress value={progress} mx="4" w="64" mt="4" />
         </VStack>
-        <CustomButton isLoading={isLoading} title="Salvar" onPress={handleSubmit(handleSave)} mt="6" />
-      </VStack>
+        <CustomButton isLoading={isLoading} title="Salvar" onPress={handleSubmit(handleSave)} mt="6" /> */}
+      </View>
     </SafeAreaView>
   );
 }

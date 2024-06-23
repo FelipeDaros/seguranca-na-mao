@@ -1,15 +1,15 @@
-import { Button, IButtonProps, Text } from "native-base";
+import { Text, TouchableOpacity, TouchableOpacityProps, ActivityIndicator } from "react-native";
 
-type Props = IButtonProps & {
+type Props = TouchableOpacityProps & {
   title: string;
+  loading: boolean;
 };
 
-export default function CustomButton({ title, ...rest }: Props) {
+export default function CustomButton({ title, loading = false, ...rest }: Props) {
   return (
-    <Button rounded="full" bg="personColors.50" w="80%" bottom={0} mb="4" {...rest}>
-      <Text color="white" fontFamily="mono">
-        {title}
-      </Text>
-    </Button>
+    <TouchableOpacity className="bg-green-escuro rounded-md p-2 w-6/12 h-10 items-center justify-center shadow-lg" {...rest}>
+      {loading && <ActivityIndicator />}
+      {!loading && <Text className="text-white font-bold">{title}</Text>}
+    </TouchableOpacity>
   );
 }

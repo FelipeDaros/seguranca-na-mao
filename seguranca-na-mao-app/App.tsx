@@ -7,7 +7,7 @@ import {
 import Loading from "./src/components/Loading";
 import { Routes } from "./src/routes";
 import { AuthContextProvider } from "./src/contexts/AuthContext";
-import { StatusBar, Text } from "react-native";
+import { StatusBar } from "react-native";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -17,10 +17,11 @@ export default function App() {
   });
 
   return (
+    // @ts-ignore
     <AuthContextProvider>
       <StatusBar
         translucent
-        backgroundColor="#1A998E"
+        backgroundColor="#525252"
         barStyle="light-content"
       />
       {fontsLoaded ? <Routes /> : <Loading />}

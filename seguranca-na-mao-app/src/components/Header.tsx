@@ -1,25 +1,14 @@
-import {
-  Avatar,
-  HStack,
-  HamburgerIcon,
-  Icon,
-  Menu,
-  Pressable,
-  Text,
-  VStack,
-  useToast,
-} from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../contexts/AuthContext";
 import { useNetInfo } from "@react-native-community/netinfo";
+import { Text, View } from "react-native";
 
 type Props = {
   back?: boolean;
 };
 
 export default function Header({ back }: Props) {
-  const toast = useToast();
   const netInfo = useNetInfo();
   const navigation = useNavigation();
   const { user, signOut, isConnected, handleFinishDay } = useAuth();
@@ -37,25 +26,26 @@ export default function Header({ back }: Props) {
     }
 
     if(!netInfo.isConnected){
-      return toast.show({
-        title: "Para finalizar expediente é necessário estar conectado",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      // return toast.show({
+      //   title: "Para finalizar expediente é necessário estar conectado",
+      //   duration: 3000,
+      //   bg: "personColors.50",
+      //   placement: "top",
+      // });
     }
 
     return handleFinishDay();
   }
 
   return (
-    <VStack>
-      {!isConnected &&
-        <HStack position="absolute" justifyContent="center" borderBottomLeftRadius="md" borderBottomRightRadius="md" top="0" alignItems="center" backgroundColor="red.600" height="7" w="100%">
-          <Text textAlign="center" color="white">Você está sem conexão</Text>
-        </HStack>
-      }
-      <HStack
+    <View>
+      {/* {!isConnected &&
+        <View className="flex-row justify-center">
+          <Text className="">Você está sem conexão</Text>
+        </View>
+      } */}
+      {/* </View><View
+        className="items-center justify-center"
         justifyContent={back ? "space-between" : "flex-end"}
         px="6"
         alignItems="center"
@@ -63,8 +53,8 @@ export default function Header({ back }: Props) {
         bg="personColors.50"
         borderBottomLeftRadius="xl"
         borderBottomRightRadius="xl"
-      >
-        {back && (
+      > */}
+        {/* {back && (
           <Pressable onPress={() => navigation.goBack()}>
             <Icon
               ml="2"
@@ -75,7 +65,7 @@ export default function Header({ back }: Props) {
             />
           </Pressable>
         )}
-        <HStack alignItems="center">
+        <View alignItems="center">
           <Text color="white" mr="6" fontFamily="mono">
             {nomeUsuario}
           </Text>
@@ -99,7 +89,7 @@ export default function Header({ back }: Props) {
             <Menu.Item onPress={sair}>{user?.user.tipo_usuario === 'VIGILANTE' ? "Finalizar expediente" : "Sair"}</Menu.Item>
           </Menu>
         </HStack>
-      </HStack>
-    </VStack>
+      </HStack> */}
+    </View>
   );
 }

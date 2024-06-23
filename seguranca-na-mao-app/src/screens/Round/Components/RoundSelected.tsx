@@ -1,18 +1,15 @@
-import { Text, VStack, useToast } from "native-base";
 import { useEffect, useState } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import * as Location from "expo-location";
 
-import CustomButton from "../../../components/CustomButton";
-import Header from "../../../components/Header";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPontos } from "../../../store/PontoStorage";
 import { getAllRondas } from "../../../store/RondaStorage";
+import { Text, View } from "react-native";
 
 export function RoundSelected(props: any) {
-  const toast = useToast();
   const navigation = useNavigation();
   const { signOut } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -46,31 +43,12 @@ export function RoundSelected(props: any) {
           String(pontoSelecionado.nome).toUpperCase()
         ) {
           
-
-          toast.show({
-            title: "Ponto verificado!",
-            duration: 3000,
-            bg: "personColors.50",
-            placement: "top",
-          });
           navigation.goBack();
         } else {
-          toast.show({
-            title: "Você não está no local correto!",
-            duration: 3000,
-            bg: "error.500",
-            placement: "top",
-          });
         }
       } catch (error: any) {
         if (error.response.status === 401) {
           signOut();
-          toast.show({
-            title: "Você precisa efetuar o login!",
-            duration: 3000,
-            bg: "error.500",
-            placement: "top",
-          });
           return;
         }
       } finally {
@@ -100,19 +78,19 @@ export function RoundSelected(props: any) {
 
   return (
     <SafeAreaView>
-      <Header back />
-      <VStack alignItems="center" justifyContent="center">
-        <Text color="personColors.150" fontFamily="heading" fontSize="md" mt="2">
+      {/* <Header back /> */}
+      <View className="items-center justify-center">
+        <Text className="">
           Escanie o QRCODE
         </Text>
-        {statusCamera && (
+        {/* {statusCamera && (
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
             style={{ width: 500, height: 500, marginTop: 20 }}
           />
-        )}
-      </VStack>
-      {scanned && (
+        )} */}
+      </View>
+      {/* {scanned && (
         <CustomButton
           title="Enviar dados"
           onPress={handleVerificar}
@@ -120,7 +98,7 @@ export function RoundSelected(props: any) {
           alignSelf="center"
           mt="2"
         />
-      )}
+      )} */}
     </SafeAreaView>
   );
 }

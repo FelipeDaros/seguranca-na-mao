@@ -27,12 +27,12 @@ export function AuthRoutes() {
   return (
     <Navigator screenOptions={{ headerShown: false, animation: "fade" }}>
       {(user?.user.status_logado === 'CHECKLIST' && user?.user.tipo_usuario === 'VIGILANTE') && <Screen name="CheckList" component={CheckList} />}
-      {(user?.user.status_logado === 'FINALIZADO' && user?.user.tipo_usuario === 'VIGILANTE') && <Screen name="FinishDay" component={FinishDay} />}
-      {(!user?.user.welcome_screen && user?.user.tipo_usuario === 'VIGILANTE') && <Screen name="Onboarding" component={Onboarding} />}
+      {/* {(user?.user.status_logado === 'FINALIZADO' && user?.user.tipo_usuario === 'VIGILANTE') && <Screen name="FinishDay" component={FinishDay} />} */}
+      {/* {(!user?.user.welcome_screen && user?.user.tipo_usuario === 'VIGILANTE') && <Screen name="Onboarding" component={Onboarding} />} */}
       {((user?.user.status_logado === 'LOGADO' && user?.user.tipo_usuario === 'VIGILANTE') || user?.user.tipo_usuario !== 'VIGILANTE') &&
         <Group>
           <Screen name="Home" component={Home} />
-          <Screen name="PointCreate" component={PointCreate} />
+          {/* <Screen name="PointCreate" component={PointCreate} />
           <Screen name="EquipamentCreate" component={EquipamentCreate} />
           <Screen name="PostService" component={PostService} />
           <Screen name="Occurrence" component={Occurrence} />
@@ -47,7 +47,7 @@ export function AuthRoutes() {
           <Screen name="RelatorioAlertas" component={RelatorioAlertas} />
           <Screen name="Empresas" component={Empresas} />
           <Screen name="EmpresaSelecionada" component={EmpresaSelecionada} />
-          <Screen name="RegisterEmpresa" component={RegisterEmpresa} />
+          <Screen name="RegisterEmpresa" component={RegisterEmpresa} /> */}
         </Group>
       }
     </Navigator>

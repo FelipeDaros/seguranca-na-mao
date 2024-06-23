@@ -1,17 +1,14 @@
-import { FlatList, Text, VStack, useToast } from "native-base";
 import { useCallback, useEffect, useState } from "react";
-import { Cards } from "./Components/Cards";
-import Loading from "../../components/Loading";
 import { useAuth } from "../../contexts/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PropsRonda, getAllRondas } from "../../store/RondaStorage";
+import { Text, View } from "react-native";
 
 export function Round() {
   const [isLoading, setIsLoading] = useState(false);
   const [rondas, setRondas] = useState<PropsRonda[]>([]);
   const { user, signOut, updateUser } = useAuth();
-  const toast = useToast();
 
   async function buscarRondas() {
     setIsLoading(true);
@@ -23,12 +20,6 @@ export function Round() {
     } catch (error: any) {
       if (error.response.status === 401) {
         signOut();
-        toast.show({
-          title: "Você precisa efetuar o login!",
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
         return;
       }
     } finally {
@@ -58,24 +49,19 @@ export function Round() {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <VStack mt="2" justifyItems="center" alignItems="center">
-        <Text
-          color="personColors.150"
-          fontFamily="heading"
-          fontSize="2xl"
-          mb="4"
-        >
+      <View className="items-center justify-center">
+        <Text className="text-white">
           Suas Rondas
         </Text>
-      </VStack>
-      {isLoading ? (
+      </View>
+      {/* {isLoading ? (
         <Loading />
       ) : (
         <FlatList
           data={rondas}
           renderItem={({ item }) => <Cards item={item} fetchRondas={buscarRondas} fetchData={checkFinishRondas}/>}
         />
-      )}
+      )} */}
     </SafeAreaView>
   );
 }

@@ -37,8 +37,8 @@ export default function Home() {
     <SafeAreaView>
       <Header />
       {user?.user.tipo_usuario === 'VIGILANTE' && <HomeVigilante />}
-      {user?.user.tipo_usuario === 'SUPERVISOR' && <HomeSupervisor />}
-      {user?.user.tipo_usuario === 'ADMINISTRADOR' && <HomeAdministrador />}
+      {/* {user?.user.tipo_usuario === 'SUPERVISOR' && <HomeSupervisor />} */}
+      {/* {user?.user.tipo_usuario === 'ADMINISTRADOR' && <HomeAdministrador />} */}
     </SafeAreaView>
   );
 }

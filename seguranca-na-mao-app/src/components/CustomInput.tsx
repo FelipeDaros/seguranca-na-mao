@@ -1,10 +1,9 @@
-import { Input, IInputProps } from "native-base";
-import { TextInput } from "react-native";
+import { TextInput, TextInputProps } from "react-native";
 
-type Props = IInputProps & {
+type Props = TextInputProps & {
   inputRef?: React.RefObject<TextInput>;
 };
 
 export default function CustomInput({ inputRef, ...rest }: Props) {
-  return <Input ref={inputRef} borderColor="personColors.150" borderWidth={0.2} w="80%" {...rest}/>;
+  return <TextInput ref={inputRef} className="w-9/12 h-10 p-2 text-white text-lg bg-[#121214] rounded-md focus:border-[#00B37E] focus:border-[1px]" {...rest}/>;
 }
