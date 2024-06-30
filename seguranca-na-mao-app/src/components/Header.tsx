@@ -1,25 +1,14 @@
-import {
-  Avatar,
-  HStack,
-  HamburgerIcon,
-  Icon,
-  Menu,
-  Pressable,
-  Text,
-  VStack,
-  useToast,
-} from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../contexts/AuthContext";
 import { useNetInfo } from "@react-native-community/netinfo";
+import { Alert, Pressable, Text, View } from "react-native";
 
 type Props = {
   back?: boolean;
 };
 
 export default function Header({ back }: Props) {
-  const toast = useToast();
   const netInfo = useNetInfo();
   const navigation = useNavigation();
   const { user, signOut, isConnected, handleFinishDay } = useAuth();
@@ -31,75 +20,51 @@ export default function Header({ back }: Props) {
     navigation.navigate('Perfil')
   }
 
-  function sair(){
-    if(user?.user.tipo_usuario !== 'VIGILANTE'){
+  function sair() {
+    if (user?.user.tipo_usuario !== 'VIGILANTE') {
       return signOut();
     }
-
-    if(!netInfo.isConnected){
-      return toast.show({
-        title: "Para finalizar expediente é necessário estar conectado",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+    
+    if (!netInfo.isConnected) {
+      Alert.alert("Sair", "Para finalizar expediente é necessário estar conectado");
     }
-
+    
     return handleFinishDay();
   }
 
+  function chooseValue(selected: any) {
+    switch (selected) {
+      case 'perfil':
+        handleNavigate();
+        break;
+      case 'sair':
+        sair();
+        break;
+    }
+  }
+
   return (
-    <VStack>
+    <View className="bg-background-escuro gap-y-2 h-20 justify-center">
       {!isConnected &&
-        <HStack position="absolute" justifyContent="center" borderBottomLeftRadius="md" borderBottomRightRadius="md" top="0" alignItems="center" backgroundColor="red.600" height="7" w="100%">
-          <Text textAlign="center" color="white">Você está sem conexão</Text>
-        </HStack>
+        <View className="flex-row justify-center h-4 items-center bg-red-claro">
+          <Text className="text-white font-bold">Você está sem conexão!</Text>
+        </View>
       }
-      <HStack
-        justifyContent={back ? "space-between" : "flex-end"}
-        px="6"
-        alignItems="center"
-        height={20}
-        bg="personColors.50"
-        borderBottomLeftRadius="xl"
-        borderBottomRightRadius="xl"
-      >
-        {back && (
+      <View className={!!back ? "flex-row mx-2 justify-between items-center" : "flex-end items-end p-2"}>
+        {!!back &&
           <Pressable onPress={() => navigation.goBack()}>
-            <Icon
-              ml="2"
-              size="lg"
-              as={MaterialCommunityIcons}
-              color="white"
-              name="arrow-left"
-            />
+            <MaterialCommunityIcons size={22} color="#fff" name="arrow-left" />
           </Pressable>
-        )}
-        <HStack alignItems="center">
-          <Text color="white" mr="6" fontFamily="mono">
+        }
+        <View className="flex-row gap-x-5 items-center">
+          <Text className="text-white">
             {nomeUsuario}
           </Text>
-          <Avatar marginRight="4" />
-          <Menu
-            w="140"
-            color="white"
-            
-            trigger={(triggerProps) => {
-              return (
-                <Pressable
-                  accessibilityLabel="More options menu"
-                  {...triggerProps}
-                >
-                  <HamburgerIcon color="white"/>
-                </Pressable>
-              );
-            }}
-          >
-            <Menu.Item onPress={handleNavigate}>Perfil</Menu.Item>
-            <Menu.Item onPress={sair}>{user?.user.tipo_usuario === 'VIGILANTE' ? "Finalizar expediente" : "Sair"}</Menu.Item>
-          </Menu>
-        </HStack>
-      </HStack>
-    </VStack>
+          <Pressable onPress={sair} className="bg-red-escuro w-10 p-1 rounded-md items-center">
+            <Text className="text-white">Sair</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
   );
 }

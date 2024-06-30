@@ -1,7 +1,6 @@
-import { Text, VStack, useToast } from "native-base";
 import Header from "../../../components/Header";
 import CustomInput from "../../../components/CustomInput";
-import RNDateTimePicker from "@react-native-community/datetimepicker";
+// import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import moment from "moment";
 import { api } from "../../../config/api";
@@ -15,7 +14,6 @@ type Props = 'inicial' | 'final';
 
 export function RelatorioRonda() {
   const { user } = useAuth();
-  const toast = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,21 +45,21 @@ export function RelatorioRonda() {
       await shareAsync(file.uri);
     } catch (error: any) {
       if (!!error.response) {
-        toast.show({
-          title: error.response.data.message,
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
+        // toast.show({
+        //   title: error.response.data.message,
+        //   duration: 3000,
+        //   bg: "error.500",
+        //   placement: "top",
+        // });
         return
       }
 
-      toast.show({
-        title: "Erro ao gerar o relatório",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      // toast.show({
+      //   title: "Erro ao gerar o relatório",
+      //   duration: 3000,
+      //   bg: "error.500",
+      //   placement: "top",
+      // });
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +145,7 @@ export function RelatorioRonda() {
   return (
     <SafeAreaView>
       <Header back />
-      <VStack alignItems="center" justifyItems="center" mt="4">
+      {/* <VStack alignItems="center" justifyItems="center" mt="4">
         <Text color="personColors.150" fontFamily="mono" fontSize="lg">
           Relatório de Rondas
         </Text>
@@ -177,7 +175,7 @@ export function RelatorioRonda() {
         setIsShowDateTimePickerFinal(false);
       }} />}
 
-      <CustomButton isLoading={isLoading} onPress={gerarPdf} title="Gerar" alignSelf="center" mt="10" />
+      <CustomButton isLoading={isLoading} onPress={gerarPdf} title="Gerar" alignSelf="center" mt="10" /> */}
     </SafeAreaView>
   )
 }

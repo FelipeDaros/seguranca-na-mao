@@ -1,10 +1,7 @@
-import { Button as NativeButton, HStack, Text, VStack, useToast } from "native-base";
 import Header from "../../components/Header";
 import { Controller, useForm } from "react-hook-form";
 import CustomInput from "../../components/CustomInput";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
-import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useEffect, useState } from "react";
 import { api } from "../../config/api";
 import { useNavigation } from "@react-navigation/native";
@@ -25,7 +22,6 @@ export default function RegisterOccurrence() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({});
-  const toast = useToast();
   const [isOpenData, setIsOpenData] = useState(false);
   const navigation = useNavigation();
   const { user } = useAuth();
@@ -62,26 +58,26 @@ export default function RegisterOccurrence() {
         fotos: data.fotos
       });
       navigation.goBack();
-      toast.show({
-        title: "Ocorrência registrada com sucesso!",
-        duration: 3000,
-        bg: "green.400",
-        placement: "top",
-      });
+      // toast.show({
+      //   title: "Ocorrência registrada com sucesso!",
+      //   duration: 3000,
+      //   bg: "green.400",
+      //   placement: "top",
+      // });
     } catch (error) {
-      toast.show({
-        title: "Erro ao registrar ocorrência!",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      // toast.show({
+      //   title: "Erro ao registrar ocorrência!",
+      //   duration: 3000,
+      //   bg: "error.500",
+      //   placement: "top",
+      // });
     }
   }
 
   return (
     <SafeAreaView>
       <Header back />
-      <VStack alignItems="center" justifyItems="center" mt="6">
+      {/* <VStack alignItems="center" justifyItems="center" mt="6">
         <Text color="personColors.150" fontFamily="body" fontSize="2xl" mb="10">
           Registrar Ocorrência
         </Text>
@@ -169,8 +165,8 @@ export default function RegisterOccurrence() {
           name="data_selecionada"
         />
         <CustomButton title="Selecionar foto" w="60%" mt="6" onPress={pickImage} />
-      </VStack>
-      <CustomButton mt="10" onPress={handleSubmit(salvarOcorrencia)} title="Salvar" alignSelf="center" />
+      </VStack> */}
+      {/* <CustomButton mt="10" onPress={handleSubmit(salvarOcorrencia)} title="Salvar" alignSelf="center" /> */}
     </SafeAreaView>
   );
 }

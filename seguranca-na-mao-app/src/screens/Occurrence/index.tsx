@@ -1,4 +1,3 @@
-import { Button, FlatList, Text, VStack, useToast } from "native-base";
 import Header from "../../components/Header";
 import CardsOccurrence from "./Components/CardsOccurrence";
 import { api } from "../../config/api";
@@ -15,7 +14,6 @@ export default function Occurrence() {
   const [ocorrenciaSelecionada, setOcorrenciaSelecionada] = useState<number>();
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const toast = useToast();
 
   async function buscarOccorrencias() {
     try {
@@ -24,20 +22,20 @@ export default function Occurrence() {
     } catch (error: any) {
       if (error.response.status === 401) {
         signOut();
-        toast.show({
-          title: "Você precisa efetuar o login!",
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
+        // toast.show({
+        //   title: "Você precisa efetuar o login!",
+        //   duration: 3000,
+        //   bg: "error.500",
+        //   placement: "top",
+        // });
         return;
       }
-      toast.show({
-        title: "Erro ao listar!",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      // toast.show({
+      //   title: "Erro ao listar!",
+      //   duration: 3000,
+      //   bg: "error.500",
+      //   placement: "top",
+      // });
     }
   }
 
@@ -54,7 +52,7 @@ export default function Occurrence() {
   return (
     <SafeAreaView>
       <Header back />
-      <VStack alignItems="center" justifyItems="center" mt="4">
+      {/* <VStack alignItems="center" justifyItems="center" mt="4">
         <Text fontFamily="mono" color="personColors.150" fontSize="lg">
           Ocorrências
         </Text>
@@ -83,7 +81,7 @@ export default function Occurrence() {
             />
           )}
         />
-      </VStack>
+      </VStack> */}
       <ModalOccurrenceSelect
         id={ocorrenciaSelecionada}
         open={isOpen}

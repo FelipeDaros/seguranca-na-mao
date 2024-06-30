@@ -1,9 +1,7 @@
 import moment from "moment";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useState } from "react";
-import RNDateTimePicker from "@react-native-community/datetimepicker";
-
-import { Text, VStack, useToast } from "native-base";
+// import RNDateTimePicker from "@react-native-community/datetimepicker";
 import Header from "../../../components/Header";
 import CustomInput from "../../../components/CustomInput";
 import CustomButton from "../../../components/CustomButton";
@@ -17,7 +15,6 @@ type Props = 'inicial' | 'final';
 
 export function RelatorioAlertas() {
   const { user } = useAuth();
-  const toast = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -49,21 +46,21 @@ export function RelatorioAlertas() {
       await shareAsync(file.uri);
     } catch (error: any) {
       if (!!error.response) {
-        toast.show({
-          title: error.response.data.message,
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
+        // toast.show({
+        //   title: error.response.data.message,
+        //   duration: 3000,
+        //   bg: "error.500",
+        //   placement: "top",
+        // });
         return
       }
 
-      toast.show({
-        title: "Erro ao gerar o relatório",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      // toast.show({
+      //   title: "Erro ao gerar o relatório",
+      //   duration: 3000,
+      //   bg: "error.500",
+      //   placement: "top",
+      // });
     } finally {
       setIsLoading(false);
     }
@@ -132,7 +129,7 @@ export function RelatorioAlertas() {
   return (
     <SafeAreaView>
       <Header back />
-      <VStack alignItems="center" justifyItems="center" mt="4">
+      {/* <VStack alignItems="center" justifyItems="center" mt="4">
         <Text color="personColors.150" fontFamily="mono" fontSize="lg">
           Relatório de Alertas
         </Text>
@@ -146,23 +143,23 @@ export function RelatorioAlertas() {
         <CustomButton title="Selecionar" w="80%" bg="personColors.50" onPress={() => {
           handleOpenDateTimePicker("final");
         }} />
-      </VStack>
+      </VStack> */}
 
-      {isShowDateTimePickerInicial && <RNDateTimePicker value={new Date()} onChange={(event) => {
+      {/* {isShowDateTimePickerInicial && <RNDateTimePicker value={new Date()} onChange={(event) => {
         if (event.type === 'set') {
           setDataInicial(moment(event.nativeEvent.timestamp).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'))
         }
         setIsShowDateTimePickerInicial(false);
-      }} />}
+      }} />} */}
 
-      {isShowDateTimePickerFinal && <RNDateTimePicker value={new Date()} onChange={(event) => {
+      {/* {isShowDateTimePickerFinal && <RNDateTimePicker value={new Date()} onChange={(event) => {
         if (event.type === 'set') {
           setDataFinal(moment(event.nativeEvent.timestamp).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'))
         }
         setIsShowDateTimePickerFinal(false);
-      }} />}
+      }} />} */}
 
-      <CustomButton isLoading={isLoading} onPress={gerarPdf} title="Gerar" alignSelf="center" mt="10"/>
+      {/* <CustomButton isLoading={isLoading} onPress={gerarPdf} title="Gerar" alignSelf="center" mt="10"/> */}
     </SafeAreaView>
   );
 }

@@ -1,10 +1,9 @@
-import { Box, Icon, ScrollView, Text, VStack, useToast } from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Header from "../../components/Header";
 import CustomButton from "../../components/CustomButton";
 import CustomInput from "../../components/CustomInput";
 import { useState } from "react";
-import { Alert, Pressable } from "react-native";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { api } from "../../config/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
@@ -14,28 +13,14 @@ export function EquipamentCreate() {
   const [equipamento, setEquipamento] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const toast = useToast();
-
   function adicionarEquipamento() {
     if (equipamento === "" || !equipamento) {
-      toast.show({
-        title: "Informe um nome para o equipamento",
-        duration: 3000,
-        bg: "red.500",
-        placement: "top",
-      });
-      return;
+      return Alert.alert("Equipamentos", "Informe um nome para o equipamento");
     }
 
     // Verifica se o equipamento já está na lista
     if (equipamentos.some((e) => e === equipamento.toUpperCase())) {
-      toast.show({
-        title: "Equipamento já existe na lista",
-        duration: 3000,
-        bg: "red.500",
-        placement: "top",
-      });
-      return;
+      return Alert.alert("Equipamentos", "Equipamento já existe na lista");
     }
 
     // Adiciona o novo equipamento à lista
@@ -52,14 +37,8 @@ export function EquipamentCreate() {
   async function salvarItens() {
     setIsLoading(true);
     if (!equipamentos.length) {
-      toast.show({
-        title: "Informe pelo menos um equipamento",
-        duration: 3000,
-        bg: "warning.600",
-        placement: "top",
-      });
-      setIsLoading(false)
-      return;
+      setIsLoading(false);
+      return Alert.alert("Equipamentos", "Informe pelo menos um equipamento");
     }
 
     try {
@@ -68,90 +47,50 @@ export function EquipamentCreate() {
       });
       setEquipamento("");
       setEquipamentos([]);
-      toast.show({
-        title: "Equipamentos cadastrados com sucesso!",
-        duration: 3000,
-        bg: "green.500",
-        placement: "top",
-      });
+      return Alert.alert("Equipamentos", "Equipamentos cadastrados com sucesso!");
     } catch (error: any) {
-      if(axios.isAxiosError(error)){
-        return toast.show({
-          title: error.response?.data.message,
-          duration: 3000,
-          bg: "red.500",
-          placement: "top",
-        });
+      if (axios.isAxiosError(error)) {
+        return Alert.alert("Equipamentos", error.response?.data.message);
       }
-      toast.show({
-        title: "Erro ao cadastrar os equipamentos",
-        duration: 3000,
-        bg: "red.500",
-        placement: "top",
-      });
+
+      return Alert.alert("Equipamentos", "Erro ao cadastrar os equipamentos");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, position: 'relative' }}>
+    <SafeAreaView className="flex-1 bg-background-escuro">
       <Header back />
-      <VStack alignItems="center" justifyContent="center" mt="4" mb="4">
-        <Text fontFamily="mono" color="personColors.150" fontSize="lg">
-          Cadastrar Equipamento
+      <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+        <Text className="text-white text-xl">Cadastrar equipamento(s)</Text>
+        <Text className="text-white text-lg">
+          Nome
         </Text>
-        <VStack mt="20%">
-          <Text color="personColors.150" fontFamily="body" fontSize="md">
-            Nome
-          </Text>
+        <View className="w-full flex-row items-center justify-center gap-x-10">
           <CustomInput
-            bg="white"
-            mt="2"
             onChangeText={(value: any) => {
               setEquipamento(value);
             }}
+            className="w-5/6"
             value={equipamento}
           />
-        </VStack>
-      </VStack>
-      <Pressable onPress={adicionarEquipamento}>
-        <Icon
-          size="lg"
-          as={MaterialCommunityIcons}
-          color="personColors.150"
-          name="plus"
-          ml="10"
-          mt="2"
-        />
-      </Pressable>
-      <VStack ml="12%" mt="4">
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          height="56"
-        >
-          {equipamentos?.length >= 1 &&
-            equipamentos?.map((equipamento, index) => (
-              <Box mt="2" key={index} flexDir="row" alignItems="center">
-                <Text color="personColors.150" mt="1">
-                  {index} - {equipamento}
-                </Text>
-                <Pressable onPress={() => removerEquipamento(equipamento)}>
-                  <Icon
-                    ml="2"
-                    size="lg"
-                    as={MaterialCommunityIcons}
-                    color="red.500"
-                    name="close"
-                    mt="2"
-                  />
-                </Pressable>
-              </Box>
-            ))}
+          <Pressable onPress={adicionarEquipamento}>
+            <MaterialCommunityIcons size={30} color="#00B37E" name="check-circle-outline" />
+          </Pressable>
+        </View>
+        <ScrollView className="flex-1 w-full h-40 gap-y-2 px-2" showsVerticalScrollIndicator={false}>
+          {equipamentos?.map(item => (
+            <View key={item} className="flex-row gap-x-2 items-center justify-between">
+              <Text className="text-white text-lg">{item}</Text>
+              <Pressable onPress={() => removerEquipamento(item)}>
+                <MaterialCommunityIcons size={30} color="#F75A68" name="close-circle-outline" />
+              </Pressable>
+            </View>
+          ))}
         </ScrollView>
-      </VStack>
-      <CustomButton title="Salvar" onPress={salvarItens} isLoading={isLoading} mt="4" bottom={0} alignSelf="center" />
-    </SafeAreaView>
+        <CustomButton title="Salvar" loading={isLoading} onPress={salvarItens} />
+      </View>
+    </SafeAreaView >
   );
 }

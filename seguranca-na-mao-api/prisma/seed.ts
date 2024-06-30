@@ -27,7 +27,7 @@ async function main() {
   await prisma.usuario.create({
     data: {
       email: 'felipe-daros@hotmail.com',
-      nome: 'Felipe',
+      nome: 'felipe',
       senha: '123',
       tipo_usuario: 'ADMINISTRADOR',
       isAdmin: true,
@@ -36,8 +36,6 @@ async function main() {
       empresa_id: empresa.id
     }
   })
-
-  console.log(empresa)
 }
 
 main()

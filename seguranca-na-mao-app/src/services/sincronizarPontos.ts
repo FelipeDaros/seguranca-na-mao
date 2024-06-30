@@ -8,17 +8,18 @@ export async function sincronizarPontos(user: IUsuario) {
     const { data } = await api.get<IPonto[]>(`/ponto/sincronizar/${user?.user.posto_id}`);
     for (const ponto of data) {
       const pontoExists = (await getAllPontos()).some(item => item.id === ponto.id);
-      if (pontoExists) return;
 
-      await createPonto({
-        id: ponto.id,
-        latitude: ponto.latitude,
-        longitude: ponto.longitude,
-        nome: ponto.nome,
-        posto_id: ponto.posto_id,
-        created_at: new Date(),
-        caminho_foto_qrcode: ponto.caminho_foto_qrcode,
-      })
+      if (!pontoExists) {
+        await createPonto({
+          id: ponto.id,
+          latitude: ponto.latitude,
+          longitude: ponto.longitude,
+          nome: ponto.nome,
+          posto_id: ponto.posto_id,
+          created_at: new Date(),
+          caminho_foto_qrcode: ponto.caminho_foto_qrcode,
+        })
+      }
     }
   } catch (error) {
     throw error;

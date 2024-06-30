@@ -1,17 +1,14 @@
-import { Box, Button, FlatList, HStack, Text, VStack, useToast } from "native-base";
 import Header from "../../components/Header";
-import { useCallback, useEffect, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../contexts/AuthContext";
 import { api } from "../../config/api";
 import { IVigilanteConfig } from "../../interfaces/IVigilanteConfig";
-import CardVigilante from "./Components/CardVigilante";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Loading from "../../components/Loading";
-
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
 export default function Configuracoes() {
-    const toast = useToast();
+    const navigation = useNavigation();
     const user = useAuth();
 
     const [loading, setLoading] = useState(false);
@@ -23,15 +20,15 @@ export default function Configuracoes() {
             const { data } = await api.get<IVigilanteConfig[]>(`/configuracoes/${user.user?.user.empresa_id}`);
             setVigilantes(data);
         } catch (error) {
-            toast.show({
-                title: "Erro ao buscar os vigilantes!",
-                duration: 3000,
-                bg: "error.500",
-                placement: "top",
-            });
+            Alert.alert("Configuração", "Erro ao buscar os vigilantes!");
         } finally {
             setLoading(false);
         }
+    }
+
+    function handleVigilante(vigilante_id: string) {
+        //@ts-ignore
+        navigation.navigate(`RegisterConfiguracoes`, { vigilante_id });
     }
 
     useFocusEffect(
@@ -40,29 +37,32 @@ export default function Configuracoes() {
         }, [])
     );
 
-    return (<SafeAreaView>
-        <VStack>
+    return (
+        <SafeAreaView className="flex-1 bg-background-escuro">
             <Header back />
-            <VStack alignItems="center" justifyItems="center" mt="4">
-                <Text fontFamily="mono" color="personColors.150" fontSize="lg">
-                    Configurações
+            <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+                <Text className="text-white text-xl mb-4">Cadastrar posto</Text>
+                <Text className="text-white text-center text-sm mb-4">
+                    As configurações que existem no vigilante serão listadas ao lado do nome
                 </Text>
-                <HStack alignItems="center" justifyItems="center" mt="2" mb="8" w="70%">
-                    <Text color="personColors.150" textAlign="center">
-                        As configurações que existem no vigilante serão listadas ao lado do nome
-                    </Text>
-                </HStack>
-                {loading && <Loading/>}
-                {!loading &&
-                    <FlatList
-                        showsVerticalScrollIndicator={false}
-                        height="3/5"
-                        data={vigilantes}
-                        keyExtractor={(item, index) => item.id}
-                        renderItem={({ item }) => (<CardVigilante vigilante={item} />)}
-                    />
-                }
-            </VStack>
-        </VStack>
-    </SafeAreaView>)
+                <ScrollView className="flex-1 w-full h-40 gap-y-2 px-2" showsVerticalScrollIndicator={false}>
+                    {vigilantes?.map(item => (
+                        <Pressable onPress={() => handleVigilante(item.id)} key={item.id} className="flex-row px-2 items-center justify-between bg-zinc-800 rounded-md">
+                            <View className="flex-col gap-x-5">
+                                <Text className="text-white text-lg">Nome: {item?.nome}</Text>
+                                <Text className="text-white text-lg">Tipo: {item?.tipo_usuario}</Text>
+                            </View>
+                            <View className="flex-row items-center w-40  justify-stretch gap-x-5">
+                                {item.Configuracoes.map(config => (
+                                    <View key={config.id} className="bg-green-claro rounded-sm p-1">
+                                        <Text className="text-white text-sm">{config?.tipo}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            </View>
+        </SafeAreaView>
+    )
 }

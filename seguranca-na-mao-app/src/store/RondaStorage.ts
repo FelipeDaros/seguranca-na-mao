@@ -28,13 +28,11 @@ async function getAllRondas() {
   }
 }
 
-async function createRonda(ronda: PropsRonda) {
+async function createRonda(ronda: PropsRonda[]) {
   try {
-    const storageRondas = await getAllRondas();
-
-    const storage = JSON.stringify([...storageRondas, ronda]);
-
+    const storage = JSON.stringify(ronda);
     await AsyncStorage.setItem(RONDA_COLLECTION, storage);
+    
   } catch (error) {
     throw error;
   }

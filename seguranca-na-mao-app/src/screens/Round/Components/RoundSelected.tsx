@@ -1,20 +1,18 @@
-import { Text, VStack, useToast } from "native-base";
 import { useEffect, useState } from "react";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import * as Location from "expo-location";
 
-import CustomButton from "../../../components/CustomButton";
-import Header from "../../../components/Header";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllPontos } from "../../../store/PontoStorage";
-import { getAllRondas } from "../../../store/RondaStorage";
+import { getAllRondas, updateRonda } from "../../../store/RondaStorage";
+import { Alert, Text, View } from "react-native";
+import Header from "../../../components/Header";
+import CustomButton from "../../../components/CustomButton";
 
 export function RoundSelected(props: any) {
-  const toast = useToast();
   const navigation = useNavigation();
-  const { signOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const [statusCamera, setStatusCamera] = useState(false);
   const [statusLocation, setStatusLocation] = useState(false);
@@ -30,52 +28,46 @@ export function RoundSelected(props: any) {
       accuracy: Location.Accuracy.Highest,
     });
 
-    const latitidadeMenos = Number(String(coords.latitude).replace("-", "")) * 0.996;
-    const latitidadeMais = Number(String(coords.latitude).replace("-", "")) * 1.002;
+    const latitidadeMenos = Number(String(coords.latitude).replace("-", "")) * 0.999;
+    const latitidadeMais = Number(String(coords.latitude).replace("-", "")) * 1.001;
 
     const rondaSelecionada = (await getAllRondas()).find(item => item.id === id);
 
     const pontoSelecionado = (await getAllPontos()).find(item => rondaSelecionada?.ponto_id)
 
-    if (pontoSelecionado) {
-      try {
-        if (
-          Number(pontoSelecionado.latitude) >= latitidadeMenos &&
-          Number(pontoSelecionado.latitude) <= latitidadeMais &&
-          String(dadosQrCode).toUpperCase() ===
-          String(pontoSelecionado.nome).toUpperCase()
-        ) {
-          
+    if (!pontoSelecionado) {
+      setLoading(false);
+      setScanned(false)
+      return Alert.alert("Ponto selecionado", "Ponto selecionado não localizado");
+    }
+    
+    if(String(dadosQrCode).toUpperCase() !== String(rondaSelecionada?.nome).toUpperCase()){
+      setLoading(false);
+      setScanned(false);
+      return Alert.alert("Ponto selecionado", "QRCODE incorreto!");
+    }
 
-          toast.show({
-            title: "Ponto verificado!",
-            duration: 3000,
-            bg: "personColors.50",
-            placement: "top",
-          });
-          navigation.goBack();
-        } else {
-          toast.show({
-            title: "Você não está no local correto!",
-            duration: 3000,
-            bg: "error.500",
-            placement: "top",
-          });
+    try {
+      if (
+        Number(pontoSelecionado.latitude) >= latitidadeMenos &&
+        Number(pontoSelecionado.latitude) <= latitidadeMais
+      ) {
+        const rondaUpdate = {
+          ...rondaSelecionada,
+          isSincronized: true,
+          verificado: true
         }
-      } catch (error: any) {
-        if (error.response.status === 401) {
-          signOut();
-          toast.show({
-            title: "Você precisa efetuar o login!",
-            duration: 3000,
-            bg: "error.500",
-            placement: "top",
-          });
-          return;
-        }
-      } finally {
-        setLoading(false);
+    
+        // @ts-ignore
+        await updateRonda(rondaUpdate);
+        navigation.goBack();
+      } else {
+        return Alert.alert("Ponto selecionado", "Local incorreto!");
       }
+    } catch (error: any) {
+      Alert.alert("Ponto selecionado", "Ocorreu um erro ao tentar validar!");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -99,28 +91,22 @@ export function RoundSelected(props: any) {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1 bg-background-escuro">
       <Header back />
-      <VStack alignItems="center" justifyContent="center">
-        <Text color="personColors.150" fontFamily="heading" fontSize="md" mt="2">
+      <View className="flex-1 flex-col items-center p-6 bg-background-escuro">
+        <Text className="text-white text-lg">
           Escanie o QRCODE
         </Text>
         {statusCamera && (
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={{ width: 500, height: 500, marginTop: 20 }}
+            style={{ width: 400, height: 400, marginTop: 20 }}
           />
         )}
-      </VStack>
-      {scanned && (
-        <CustomButton
-          title="Enviar dados"
-          onPress={handleVerificar}
-          isLoading={loading}
-          alignSelf="center"
-          mt="2"
-        />
-      )}
+        {scanned && (
+          <CustomButton className="mt-8" title="Enviar" loading={loading} onPress={handleVerificar} />
+        )}
+      </View>
     </SafeAreaView>
   );
 }

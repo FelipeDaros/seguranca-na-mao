@@ -1,12 +1,3 @@
-import {
-  Box,
-  Icon,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-  useToast,
-} from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Header from "../../components/Header";
 import { Controller, useForm } from "react-hook-form";
@@ -14,11 +5,12 @@ import CustomInput from "../../components/CustomInput";
 import { useEffect, useState } from "react";
 import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import CustomButton from "../../components/CustomButton";
+import { Alert, ScrollView, Text, View } from "react-native";
+import Checkbox from 'expo-checkbox';
 
 type FormData = {
   nome: string;
@@ -47,7 +39,6 @@ export default function PostService() {
     reset,
     formState: { errors },
   } = useForm<FormData>({});
-  const toast = useToast();
   const { signOut, user } = useAuth();
   const navigation = useNavigation();
 
@@ -57,6 +48,7 @@ export default function PostService() {
   const [equipamentosSelecionados, setEquipamentosSelecionados] = useState<
     number[]
   >([]);
+  const [isChecked, setChecked] = useState(false);
 
   async function buscarEquipamentos() {
     try {
@@ -64,35 +56,9 @@ export default function PostService() {
       setEquipaments(data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        if (error.code === "401") {
-          signOut();
-          toast.show({
-            title: "Você precisa efetuar o login!",
-            duration: 3000,
-            bg: "error.500",
-            placement: "top",
-          });
-          return;
-        }
-
-        if (error.response) {
-          toast.show({
-            title: error.response.data.message,
-            duration: 3000,
-            bg: "error.500",
-            placement: "top",
-          });
-
-          return;
-        }
+        return Alert.alert("Posto", error.response?.data.message);
       }
-
-      toast.show({
-        title: "Erro ao listar!",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      return Alert.alert("Posto", "Erro ao listar!");
     }
   }
 
@@ -112,14 +78,8 @@ export default function PostService() {
   async function handleSave(data: FormData) {
     setIsLoading(true);
     if (!data.equipaments?.length || !data.equipaments) {
-      toast.show({
-        title: "Informe pelo menos um equipamento",
-        duration: 3000,
-        bg: "warning.400",
-        placement: "top",
-      });
       setIsLoading(false);
-      return;
+      return Alert.alert("Posto", "Informe pelo menos um equipamento!");
     }
 
     try {
@@ -134,24 +94,12 @@ export default function PostService() {
       setEquipamentosSelecionados([]);
       reset();
       navigation.goBack();
-      toast.show({
-        title: "Posto criado com sucesso!",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      return Alert.alert("Posto", "Posto criado com sucesso!");
     } catch (error: any) {
-      if (error.response.status === 401) {
-        await AsyncStorage.removeItem("usuario");
-        signOut();
+      if (axios.isAxiosError(error)) {
+        return Alert.alert("Posto", error.response?.data.message);
       }
-
-      toast.show({
-        title: "Erro ao cadastrar o posto",
-        duration: 3000,
-        bg: "red.400",
-        placement: "top",
-      });
+      return Alert.alert("Posto", "Erro ao cadastrar o posto");
     } finally {
       setIsLoading(false);
     }
@@ -165,16 +113,7 @@ export default function PostService() {
       setValue("empresa_nome", data.nome);
       setEmpresa(data)
     } catch (error: any) {
-      if (error.response.status === 401) {
-        await AsyncStorage.removeItem("usuario");
-        signOut();
-      }
-      return toast.show({
-        title: "Erro ao buscar a empresa",
-        duration: 3000,
-        bg: "red.400",
-        placement: "top",
-      });
+      return Alert.alert("Posto", "Erro ao buscar a empresa");
     } finally {
       setIsLoading(false);
     }
@@ -186,131 +125,52 @@ export default function PostService() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView className="flex-1 bg-background-escuro">
       <Header back />
-      <VStack alignItems="center" mt="4">
-        <Text fontFamily="mono" color="personColors.150" fontSize="lg">
-          Cadastrar Posto
-        </Text>
-        <VStack mt="6">
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-              required: true,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <>
-                <Text color="personColors.150" fontFamily="body" fontSize="md">
-                  Nome
-                </Text>
-                <CustomInput
-                  onBlur={onBlur}
-                  bg="white"
-                  mt="2"
-                  onChangeText={onChange}
-                  value={value}
-                />
-              </>
-            )}
-            name="nome"
-          />
-          {errors.nome && <Text color={"error.500"}>Campo é obrigatório</Text>}
-
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <>
-                <Text color="personColors.150" fontFamily="body" fontSize="md" mt={2}>
-                  Empresa
-                </Text>
-                <CustomInput
-                  onBlur={onBlur}
-                  bg="white"
-                  mt="2"
-                  onChangeText={onChange}
-                  value={value}
-                  isDisabled
-                />
-              </>
-            )}
-            name="empresa_nome"
-          />
-          <VStack>
-            <Text color="personColors.150" fontFamily="body" fontSize="md" mt={2}>
-              Selecione os equipamentos abaixo
-            </Text>
-            <ScrollView
-              maxH="56"
-              mb="4"
-              mt="4"
-              showsVerticalScrollIndicator={false}
-              showsHorizontalScrollIndicator={false}
-            >
-              {equipaments?.length >= 1 &&
-                equipaments?.map((equipaments, index) => (
-                  <Box
-                    mt="4"
-                    ml="2"
-                    key={equipaments.id}
-                    flexDir="row"
-                    alignItems="center"
-                  >
-                    <Pressable
-                      flexDir="row"
-                      justifyItems="center"
-                      onPress={() => {
-                        selecionarEquipamentos(equipaments.id);
-                      }}
-                    >
-                      <Text
-                        color="personColors.150"
-                        opacity={
-                          equipamentosSelecionados.some(
-                            (item) => item === equipaments.id
-                          )
-                            ? 1
-                            : 0.5
-                        }
-                        mt="1"
-                      >
-                        {equipaments.id} - {equipaments.nome}
-                      </Text>
-
-                      {equipamentosSelecionados.some(
-                        (item) => item === equipaments.id
-                      ) ? (
-                        <Icon
-                          ml="2"
-                          size="lg"
-                          as={MaterialCommunityIcons}
-                          color="green.500"
-                          name="check"
-                        />
-                      ) : (
-                        <Icon
-                          ml="2"
-                          size="lg"
-                          as={MaterialCommunityIcons}
-                          color="gray.200"
-                          name="check"
-                        />
-                      )}
-                    </Pressable>
-                  </Box>
-                ))}
-            </ScrollView>
-          </VStack>
-        </VStack>
-        <CustomButton
-          title="Cadastrar"
-          isLoading={isLoading}
-          onPress={handleSubmit(handleSave)}
+      <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+        <Text className="text-white text-xl mb-4">Cadastrar posto</Text>
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View className="w-full items-center my-5 gap-y-2">
+              <Text className="font-bold text-white text-base">Nome</Text>
+              <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+              {errors.nome && <Text className="text-red-500">Campo é obrigatório</Text>}
+            </View>
+          )}
+          name="nome"
         />
-      </VStack>
+
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View className="w-full items-center my-5 gap-y-2">
+              <Text className="font-bold text-white text-base">Empresa</Text>
+              <CustomInput disabled value={value} onChangeText={(text) => onChange(text)} />
+            </View>
+          )}
+          name="empresa_nome"
+        />
+
+        <ScrollView className="flex-1 w-full h-40 gap-y-2 px-2" showsVerticalScrollIndicator={false}>
+          {equipaments?.map(item => (
+            <View key={item.id} className="flex-row gap-x-2 items-center justify-between">
+              <Text className="text-white text-lg">{item.nome}</Text>
+              <Checkbox
+                value={equipamentosSelecionados.includes(item.id)}
+                onValueChange={() => selecionarEquipamentos(item.id)}
+              />
+            </View>
+          ))}
+        </ScrollView>
+        <CustomButton title="Entrar" loading={isLoading} onPress={handleSubmit(handleSave)} />
+      </View>
     </SafeAreaView>
   );
 }

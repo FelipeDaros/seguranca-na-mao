@@ -1,24 +1,18 @@
 import { useNavigation } from "@react-navigation/native";
-import {
-  Pressable,
-  IPressableProps,
-  Text,
-  Icon,
-  Box,
-  VStack,
-} from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Pressable, PressableProps, Text, View } from "react-native";
 
-type Props = IPressableProps & {
+type Props = PressableProps & {
   name: string;
   route?: string;
-  iconName: string;
+  iconName: any;
 };
 
 export default function CardsHome({ name, route, iconName, ...rest }: Props) {
   const navigation = useNavigation();
 
   function navigateRoute(route: string) {
+    // @ts-ignore
     navigation.navigate(route);
   }
 
@@ -30,26 +24,11 @@ export default function CardsHome({ name, route, iconName, ...rest }: Props) {
           navigateRoute(route);
         }
       }}
-      _pressed={{ bg: 'gray.300' }}
-      bg="gray.200"
-      w="32"
-      h="32"
-      m="2"
-      p="2"
-      rounded="md"
-      justifyContent="center"
-      alignItems="center"
     >
-      <VStack justifyContent="center" alignItems="center">
-        <Text color="personColors.150" textAlign="center">{name}</Text>
-        <Icon
-          mt="2"
-          size={8}
-          as={MaterialCommunityIcons}
-          color="personColors.50"
-          name={iconName}
-        />
-      </VStack>
+      <View className="bg-gray-300 rounded-md mx-2 h-28 w-28 justify-center items-center">
+        <Text className="text-center my-2">{name}</Text>
+        <MaterialCommunityIcons name={iconName} size={28} />
+      </View>
     </Pressable>
   );
 }

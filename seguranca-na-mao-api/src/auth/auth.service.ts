@@ -15,12 +15,16 @@ export class AuthService {
     const user = await prisma.usuario.findFirst({
       where: {
         nome,
-        senha,
+        senha
       },
     });
 
     if (!user) {
       throw new NotFoundException("Usuário ou senha incorretos");
+    }
+
+    if(!user.ativo){
+      throw new NotFoundException("Usuário desativado!");
     }
 
     user.ultimo_login = horarioAtualConfigurado();

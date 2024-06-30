@@ -1,4 +1,3 @@
-import { Box, Checkbox, FlatList, HStack, Icon, ScrollView, Text, VStack, useToast } from "native-base";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../../config/api";
@@ -8,9 +7,10 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Loading from "../../components/Loading";
 import moment from "moment-timezone";
 import CustomButton from "../../components/CustomButton";
+import { ScrollView, Text, View } from "react-native";
+import Checkbox from "expo-checkbox";
 
 export function FinishDay() {
-  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [finishDay, setFinishDay] = useState<IFinishDay>();
   const [confirmaDevolucao, setConfirmaDevolucao] = useState(false);
@@ -36,12 +36,12 @@ export function FinishDay() {
 
   async function finish(): Promise<void> {
     if (!confirmaDevolucao) {
-      return toast.show({
-        title: "Confirme a devolução dos equipamentos!",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      // return toast.show({
+      //   title: "Confirme a devolução dos equipamentos!",
+      //   duration: 3000,
+      //   bg: "personColors.50",
+      //   placement: "top",
+      // });
     }
 
     try {
@@ -64,55 +64,33 @@ export function FinishDay() {
   }
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <VStack alignItems="center" justifyItems="center" mt="4">
-          <Text fontFamily="mono" color="personColors.150" fontSize="lg">
-            Finalizando expediente
-          </Text>
-          <Text fontFamily="heading" color="personColors.150" fontSize="sm" mt="4">
-            Informe os equipamentos para devolução
-          </Text>
-          <Box bg="personColors.100" width="56" alignItems="center" justifyItems="center" borderRadius="md" padding="2" mt="2">
-            {finishDay?.equipamentos.map(item => <Text key={item?.id} color="personColors.150">{item?.nome}</Text>)}
-          </Box>
-          <Text fontFamily="heading" color="personColors.150" fontSize="sm" mt="4">
-            Rondas excluídas
-          </Text>
-          {finishDay?.rondasCanceladas.map(item =>
-            <HStack key={item.id} width="56" alignItems="center" borderRadius="md" bg="error.500" mt="2">
-              <VStack justifyContent="center" alignItems="center" w="20%">
-                <Icon
-                  size={8}
-                  as={MaterialCommunityIcons}
-                  color="white"
-                  name="alert-circle"
-                />
-              </VStack>
-              <VStack justifyContent="center">
-                <Text fontFamily="body" color="white" fontSize="sm">
-                  {item?.Ponto?.nome}
-                </Text>
-                <Text fontFamily="body" color="white" fontSize="10">
-                  {item?.motivo}
-                </Text>
-              </VStack>
-            </HStack>
-          )}
-          <Text fontFamily="heading" color="personColors.150" fontSize="sm" mt="4">
-            Total de rondas efetuadas: {finishDay?.finishDay?.GerarRondas?.length}
-          </Text>
-          <Text fontFamily="heading" color="personColors.150" fontSize="sm" mt="4">
-            Total de alertas emitidos: {finishDay?.finishDay?.Alerta?.length}
-          </Text>
-          <Text fontFamily="heading" color="personColors.150" fontSize="sm" mt="4">
-            Confirmar devolução
-          </Text>
-          {/* @ts-ignore */}
-          <Checkbox mt="2" value={confirmaDevolucao} onChange={handleDevolucaoCheckBox} aria-label="confirmaDevolucao" />
-        </VStack>
-        <CustomButton bg="error.500" title="Finalizar Expediente" onPress={finish} mt="4" alignSelf="center"/>
-      </ScrollView>
+    <SafeAreaView className="flex-1 bg-background-escuro">
+      <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+        <Text className="text-white text-xl mb-4">Finalizando expediente</Text>
+        <Text className="text-white text-xl mb-4">Rondas excluídas</Text>
+        <View className="flex-col w-full">
+          {finishDay?.equipamentos.map(item => <Text key={item?.id} className="text-white text-sm">{item?.nome}</Text>)}
+        </View>
+        <ScrollView className="flex-1 w-full h-40 gap-y-2 px-2" showsVerticalScrollIndicator={false}>
+          {finishDay?.rondasCanceladas?.map(item => (
+            <View key={item.id} className="flex-row gap-x-2 items-center justify-between bg-red-claro">
+              <Text className="text-white text-lg">{item.Ponto.nome}</Text>
+              <Text className="text-white text-sm">{item.motivo}</Text>
+            </View>
+          ))}
+        </ScrollView>
+        <Text className="text-white text-sm mb-4">
+          Total de rondas efetuadas: {finishDay?.finishDay?.GerarRondas?.length}
+        </Text>
+        <Text className="text-white text-sm mb-4">
+          Total de alertas emitidos: {finishDay?.finishDay?.Alerta?.length}
+        </Text>
+        <Text className="text-white text-sm mb-4">
+          Confirmar devolução
+        </Text>
+        <Checkbox value={confirmaDevolucao} onValueChange={handleDevolucaoCheckBox} aria-label="confirmaDevolucao" />
+        <CustomButton className="bg-red-claro" title="Finalizar" loading={loading} onPress={finish} />
+      </View>
     </SafeAreaView>
   )
 }
