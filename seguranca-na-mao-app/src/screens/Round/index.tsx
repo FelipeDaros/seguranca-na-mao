@@ -3,7 +3,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PropsRonda, getAllRondas } from "../../store/RondaStorage";
-import { Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
+import { Cards } from "./Components/Cards";
 
 export function Round() {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,10 +12,10 @@ export function Round() {
   const { user, signOut, updateUser } = useAuth();
 
   async function buscarRondas() {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const data = (await getAllRondas()).filter(item => !item.isSincronized);
-
+      // console.log(data);
       setRondas(data);
       checkFinishRondas();
     } catch (error: any) {
@@ -27,10 +28,10 @@ export function Round() {
     }
   }
 
-  async function checkFinishRondas(){
+  async function checkFinishRondas() {
     const data = (await getAllRondas()).filter(item => !item.isSincronized);
 
-    if(!data.length){
+    if (!data.length) {
       const userUpdateFinishRondas = {
         ...user,
         isRondaActive: false
@@ -48,20 +49,14 @@ export function Round() {
   );
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View className="items-center justify-center">
-        <Text className="text-white">
-          Suas Rondas
-        </Text>
-      </View>
-      {/* {isLoading ? (
-        <Loading />
-      ) : (
+    <SafeAreaView className="flex-1 bg-background-escuro">
+      <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+        <Text className="text-white text-xl mb-4">Suas rondas</Text>
         <FlatList
           data={rondas}
-          renderItem={({ item }) => <Cards item={item} fetchRondas={buscarRondas} fetchData={checkFinishRondas}/>}
+          renderItem={({ item }) => <Cards item={item} fetchRondas={buscarRondas} fetchData={checkFinishRondas} />}
         />
-      )} */}
+      </View>
     </SafeAreaView>
   );
 }

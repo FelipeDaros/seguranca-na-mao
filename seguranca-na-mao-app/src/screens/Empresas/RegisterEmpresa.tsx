@@ -1,11 +1,14 @@
 import { api } from "../../config/api";
-import { ScrollView, Select, Text, VStack, useToast } from "native-base";
 import Header from "../../components/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import Loading from "../../components/Loading";
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import axios from "axios";
+import { Controller, useForm } from "react-hook-form";
+import CustomSelect from "../../components/CustomSelect";
 
 type EmpresaProps = {
   nome: string;
@@ -18,10 +21,46 @@ type EmpresaProps = {
   email: string;
 }
 
+const estados = [
+  {
+    id: "SC",
+    nome: "SC"
+  },
+  {
+    id: "PR",
+    nome: "PR"
+  },
+  {
+    id: "RS",
+    nome: "RS"
+  },
+  {
+    id: "SP",
+    nome: "SP"
+  }
+]
+
 export function RegisterEmpresa() {
-  const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [empresa, setEmpresa] = useState<EmpresaProps>({} as EmpresaProps);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    getFieldState,
+    formState: { errors },
+  } = useForm<EmpresaProps>({
+    defaultValues: {
+      nome: "",
+      estado: "",
+      cidade: "",
+      documento: "",
+      responsavel: "",
+      contato: "",
+      endereco: "",
+      email: "",
+    },
+  });
 
 
   if (loading) {
@@ -30,154 +69,187 @@ export function RegisterEmpresa() {
     )
   }
 
-  async function handleSave() {
+  async function handleSave(empresa: EmpresaProps) {
     try {
       setLoading(true);
       await api.post(`/empresa`, empresa);
-      toast.show({
-        title: "Dados foram alterados  com sucesso!",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      Alert.alert("Empresa", "Empresa foi salva com sucesso!");
+      reset();
     } catch (error: any) {
-      if (!!error.response) {
-        return toast.show({
-          title: error.response.data.message,
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
+      if (axios.isAxiosError(error)) {
+        const errorMessages = error.response?.data.message;
+        if (errorMessages && Array.isArray(errorMessages)) {
+          const combinedMessages = errorMessages.join('\n');
+          Alert.alert("Empresa", combinedMessages);
+        }else{
+          return Alert.alert("Empresa", error.response?.data.message);
+        }
       }
-
-      return toast.show({
-        title: "Erro ao tentar alterar empresa",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
-
+      Alert.alert("Empresa", "Erro ao tentar alterar empresa");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <Header back />
-      <ScrollView>
-        <VStack alignItems="center" mt="8" mb="8">
-          <Text color="personColors.150" fontFamily="body" fontSize="md">
-            Nome empresa
-          </Text>
-          <CustomInput
-            bg="white"
-            mt="2"
-            onChangeText={(value) => setEmpresa({ ...empresa, nome: value })}
-            value={empresa.nome}
-            _input={{
-              maxLength: 250
-            }}
-          />
-          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
-            Estado
-          </Text>
-          <Select
-            bg="white"
-            mt="2"
-            onValueChange={itemValue => setEmpresa({ ...empresa, estado: itemValue })}
-            selectedValue={empresa.estado}
-            w="80%"
-          >
-            <Select.Item shadow={2} label="Santa Catarina" value="SC" />
-            <Select.Item shadow={2} label="Paraná" value="PR" />
-            <Select.Item shadow={2} label="Rio Grande do Sul" value="RS" />
-          </Select>
-          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
-            Cidade
-          </Text>
-          <CustomInput
-            bg="white"
-            mt="2"
-            onChangeText={(value) => setEmpresa({ ...empresa, cidade: value })}
-            value={empresa.cidade}
-            _input={{
-              maxLength: 150
-            }}
-          />
-          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
-            Responsável
-          </Text>
-          <CustomInput
-            bg="white"
-            mt="2"
-            onChangeText={(value) => setEmpresa({ ...empresa, responsavel: value })}
-            value={empresa.responsavel}
-            _input={{
-              maxLength: 100
-            }}
-          />
-          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
-            Documento
-          </Text>
-          <CustomInput
-            bg="white"
-            mt="2"
-            placeholder="CNPJ/CPF somente números"
-            onChangeText={(value) => setEmpresa({ ...empresa, documento: value })}
-            value={empresa.documento}
-            _input={{
-              maxLength: 14
-            }}
-          />
-          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
-            Contato
-          </Text>
-          <CustomInput
-            bg="white"
-            mt="2"
-            placeholder="00000000000"
-            onChangeText={(value) => setEmpresa({ ...empresa, contato: value })}
-            value={empresa.contato}
-            _input={{
-              maxLength: 11
-            }}
-          />
-          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
-            Endereço
-          </Text>
-          <CustomInput
-            bg="white"
-            mt="2"
-            placeholder="Bairro/Rua/Numero"
-            onChangeText={(value) => setEmpresa({ ...empresa, endereco: value })}
-            value={empresa.endereco}
-            _input={{
-              maxLength: 250
-            }}
-          />
-          <Text color="personColors.150" fontFamily="body" fontSize="md" mt="4">
-            Email
-          </Text>
-          <CustomInput
-            bg="white"
-            mt="2"
-            placeholder="exemplo@exemplo.com"
-            onChangeText={(value) => setEmpresa({ ...empresa, email: value })}
-            value={empresa.email}
-            _input={{
-              maxLength: 250
-            }}
-          />
-          <CustomButton
-            onPress={handleSave}
-            bg="personColors.50"
-            w="80%"
-            mt="6"
-            title="Salvar"
-          />
-        </VStack>
-      </ScrollView>
-    </SafeAreaView>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView className="flex-1 bg-background-escuro">
+        <Header back />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base">Nome empresa</Text>
+                    <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+                    {errors.nome && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="nome"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 14,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base">Documento</Text>
+                    <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+                    {errors.documento && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="documento"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base">Email</Text>
+                    <CustomInput keyboardType="email-address" value={value} onChangeText={(text) => onChange(text)} />
+                    {errors.email && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="email"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 11,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base">Contato</Text>
+                    <CustomInput keyboardType="phone-pad" placeholder="Ex: ************" value={value} onChangeText={(text) => onChange(text)} />
+                    {errors.contato && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="contato"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 50,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base">Responsável</Text>
+                    <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+                    {errors.responsavel && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="responsavel"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 50,
+                max: 50,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base">Cidade</Text>
+                    <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+                    {errors.cidade && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="cidade"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+                max: 100,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base">Endereço</Text>
+                    <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+                    {errors.endereco && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="endereco"
+            />
+
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 2,
+                required: true
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="w-full justify-center items-center gap-y-2">
+                  <View className="w-full items-center my-5 gap-y-2">
+                    <Text className="font-bold text-white text-base mb-2">Estado</Text>
+                    <CustomSelect value={value} isDisabled={loading} data={estados} selectValue={onChange} />
+                    {errors.estado && <Text className="text-red-500">Campo é obrigatório</Text>}
+                  </View>
+                </View>
+              )}
+              name="estado"
+            />
+
+            <CustomButton title="Salvar" loading={loading} onPress={handleSubmit(handleSave)} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   )
 }

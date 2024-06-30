@@ -1,5 +1,4 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { Button, ScrollView, Select, Text, VStack, useToast } from "native-base";
 import { useCallback, useState } from "react";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
@@ -20,7 +19,6 @@ type EmpresaProps = {
 }
 
 export function EmpresaSelecionada(props: any) {
-  const toast = useToast();
   const navigation = useNavigation();
 
   const [loading, setLoading] = useState(false);
@@ -46,29 +44,29 @@ export function EmpresaSelecionada(props: any) {
     try {
       setLoading(true);
       await api.patch(`/empresa/${props.route.params.id}`, empresa);
-      toast.show({
-        title: "Dados foram alterados  com sucesso!",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      // toast.show({
+      //   title: "Dados foram alterados  com sucesso!",
+      //   duration: 3000,
+      //   bg: "personColors.50",
+      //   placement: "top",
+      // });
       await fetchData();
     } catch (error: any) {
       if (!!error.response) {
-        return toast.show({
-          title: error.response.data.message,
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
+        // return toast.show({
+        //   title: error.response.data.message,
+        //   duration: 3000,
+        //   bg: "error.500",
+        //   placement: "top",
+        // });
       }
 
-      return toast.show({
-        title: "Erro ao tentar alterar empresa",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      // return toast.show({
+      //   title: "Erro ao tentar alterar empresa",
+      //   duration: 3000,
+      //   bg: "error.500",
+      //   placement: "top",
+      // });
 
     } finally {
       setLoading(false);
@@ -84,7 +82,7 @@ export function EmpresaSelecionada(props: any) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Header back />
-      <ScrollView>
+      {/* <ScrollView>
         <VStack alignItems="center" mt="8" mb="8">
           <Text color="personColors.150" fontFamily="body" fontSize="md">
             Nome empresa
@@ -196,7 +194,7 @@ export function EmpresaSelecionada(props: any) {
             title="Salvar"
           />
         </VStack>
-      </ScrollView>
+      </ScrollView> */}
     </SafeAreaView>
   )
 }

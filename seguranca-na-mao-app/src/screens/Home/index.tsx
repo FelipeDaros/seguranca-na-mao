@@ -34,11 +34,11 @@ export default function Home() {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1 bg-background-escuro">
       <Header />
       {user?.user.tipo_usuario === 'VIGILANTE' && <HomeVigilante />}
-      {/* {user?.user.tipo_usuario === 'SUPERVISOR' && <HomeSupervisor />} */}
-      {/* {user?.user.tipo_usuario === 'ADMINISTRADOR' && <HomeAdministrador />} */}
+      {user?.user.tipo_usuario === 'SUPERVISOR' && <HomeSupervisor />}
+      {user?.user.tipo_usuario === 'ADMINISTRADOR' && <HomeAdministrador />}
     </SafeAreaView>
   );
 }

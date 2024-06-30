@@ -60,6 +60,8 @@ const AuthContextProvider: React.FC = ({ children }) => {
     const userParsed: IUsuario = JSON.parse(storagedUser);
 
     userParsed.user.status_logado = 'FINALIZADO';
+    userParsed.isRondaActive = false;
+    
     setUser(userParsed);
 
     await AsyncStorage.setItem("@SEGMAO:user", JSON.stringify(userParsed));

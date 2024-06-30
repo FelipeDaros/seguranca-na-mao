@@ -9,9 +9,10 @@ export function Routes() {
   const { user } = useAuth();
 
   return (
-    <NavigationContainer>
-      {!!user ? (user.isRondaActive ? <RoutesRoundActive /> : <AuthRoutes />) : <NoAuthRoutes />}
-      {/* <NoAuthRoutes /> */}
-    </NavigationContainer>
+    <View className="flex-1 bg-background-escuro">
+      <NavigationContainer>
+        {!!user ? (user.isRondaActive ? <RoutesRoundActive /> : <AuthRoutes />) : <NoAuthRoutes />}
+      </NavigationContainer>
+    </View>
   );
 }

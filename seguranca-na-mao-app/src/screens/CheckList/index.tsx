@@ -1,85 +1,49 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { StepOne } from "./Components/StepOne";
-import { StepTwo } from "./Components/StepTwo";
-import { StepThree } from "./Components/StepThree";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "../../config/api";
-import { IPosto } from "../../interfaces/IPosto";
-import { CheckListStore } from "../../store/CheckListStore";
-import Loading from "../../components/Loading";
-import { View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
+import { IEquipamento } from "../../interfaces/IEquipamento";
+import Checkbox from "expo-checkbox";
+import axios from "axios";
+import CustomButton from "../../components/CustomButton";
 
 export default function CheckList() {
-  const [postId, onChangeEquipamentos, onChangePreviousService, setIsLoading, equipamentosSelecionados, relatorioLido, checkListStoreClear, isLoading] = CheckListStore((state) => [state.postId, state.onChangeEquipamentos, state.onChangePreviousService, state.setIsLoading, state.equipamentosSelecionados, state.relatorioLido, state.checkListStoreClear, state.isLoading]);
-
   const { user, signOut, handleChecked } = useAuth();
+  const [confirmarLeitura, setConfirmarLeitura] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [equipamentos, setEquipamentos] = useState<IEquipamento[]>([] as IEquipamento[]);
+  const [equipamentosSelecionados, setEquipamentosSelecionados] = useState<
+    number[]
+  >([]);
 
-  const [step, setStep] = useState(1);
-  const [postos, setPostos] = useState<IPosto[]>([] as IPosto[]);
-
-  async function buscarEquipamentosPostoServico(posto_id: number) {
-    setIsLoading();
+  async function buscarEquipamentosPostoServico() {
     try {
+      setIsLoading(true);
       const { data } = await api.get(
-        `/equipamentos-posto/listar-equipamentos/${posto_id}`
+        `/equipamentos-posto/listar-equipamentos/${user?.user.posto_id}`
       );
-      onChangeEquipamentos(data);
-    } catch (error: any) {
-      if (error.response.status === 401) {
-        signOut();
-        return;
-      }
-    } finally {
-      setIsLoading();
-    }
-  }
-
-  async function buscarPostosDeServico() {
-    setIsLoading();
-    try {
-      const { data } = await api.get(`/posto-servico/${user?.user.empresa_id}`);
-      setPostos(data);
-    } catch (error: any) {
-      if (error.response.status === 401) {
-        signOut();
-        return;
-      }
-    } finally {
-      setIsLoading();
-    }
-  }
-
-  async function buscarUltimoServicoNoPosto(posto_id: number) {
-    try {
-      const { data } = await api.get(`/servico/ultimo-servico/${posto_id}`);
-      if (!data) {
-        return
-      }
-      onChangePreviousService(data);
+      setEquipamentos(data);
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return Alert.alert("Checklist", error.response?.data.message);
+      }
+
+      Alert.alert("Checklist", "Ocorreu um erro ao buscar os equipamentos");
+    } finally {
+      setIsLoading(false);
     }
   }
-
-  const onChangeStep = (type: string) => {
-    if (type === 'FRONT') {
-      setStep(step + 1);
-    }
-
-    if (type === 'BACK') {
-      setStep(step - 1);
-    }
-  };
 
   async function handleFinsh() {
     try {
-      setIsLoading();
+      setIsLoading(true);
 
       const payload = {
         usuario_id: user?.user.id,
         empresa_id: user?.user.empresa_id,
-        posto_id: postId,
-        relatorio_lido: relatorioLido,
+        posto_id: user?.user.posto_id,
+        relatorio_lido: true,
         equipamentos_id: equipamentosSelecionados
       }
 
@@ -88,49 +52,54 @@ export default function CheckList() {
       const { data } = await api.post(`/servico`, payload);
 
       await api.put(`/usuarios/update-status-logado/${user?.user.id}/${statusUsuario}`);
-      //@ts-ignore
-      handleChecked(postId, data);
-      checkListStoreClear();
+      // @ts-ignore
+      handleChecked(user?.user.posto_id, data);
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return Alert.alert("Checklist", error.response?.data.message);
+      }
+
+      Alert.alert("Checklist", "Ocorreu um erro ao tentar confirmar");
     } finally {
-      setIsLoading();
+      setIsLoading(false)
+    }
+  }
+
+  async function selecionarEquipamentos(id: number) {
+    if (equipamentosSelecionados.some((item) => item === id)) {
+      const equipamentosAlterados = equipamentosSelecionados.filter(
+        (item) => item !== id
+      );
+      setEquipamentosSelecionados(equipamentosAlterados);
+    } else {
+      setEquipamentosSelecionados([...equipamentosSelecionados, id]);
     }
   }
 
   useEffect(() => {
-    buscarPostosDeServico();
-    if (postId) {
-      buscarUltimoServicoNoPosto(postId);
-      buscarEquipamentosPostoServico(postId);
-    }
-  }, [postId]);
+    buscarEquipamentosPostoServico()
+  }, []);
 
   return (
-    <SafeAreaView>
-      {isLoading && <Loading />}
-      {!isLoading &&
-        <View className="items-center justify-center">
-          {/* <Progress w="80%" my="10" colorScheme="emerald" value={step === 1 ? 33.333333333 : step === 2 ? 66.666666666 : 100} /> */}
-          {step === 1 && <StepOne postos={postos} />}
-          {/* {step === 2 && <StepTwo />} */}
-          {/* {step === 3 && <StepThree />} */}
-          {/* <HStack justifyContent="space-around" my="10">
-            <Button bg="personColors.50" w="24" mx="12" disabled={step <= 1} onPress={() => onChangeStep('BACK')}>
-              Anterior
-            </Button>
-            {step < 3 &&
-              <Button bg="personColors.50" w="24" mx="12" disabled={step >= 3} onPress={() => onChangeStep('FRONT')}>
-                Próximo
-              </Button>
-            }
-            {step === 3 &&
-              <Button bg="personColors.50" w="24" isLoading={isLoading} disabled={step !== 3} mx="12" onPress={handleFinsh}>
-                Finalizar
-              </Button>
-            }
-          </HStack> */}
-        </View>
-      }
+    <SafeAreaView className="flex-1 bg-background-escuro">
+      <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+        <ScrollView className="flex-1 w-full h-40 gap-y-2 px-2" showsVerticalScrollIndicator={false}>
+          {equipamentos?.map(item => (
+            <View key={item.id} className="flex-row gap-x-2 items-center justify-between">
+              <Text className="text-white text-lg">{item.nome}</Text>
+              <Checkbox
+                value={equipamentosSelecionados.includes(item.id)}
+                onValueChange={() => selecionarEquipamentos(item.id)}
+              />
+            </View>
+          ))}
+        </ScrollView>
+        <Text className="text-white text-sm">
+          Confirmo a leitura dos equipamamentos
+        </Text>
+        <Checkbox className="mb-2" value={confirmarLeitura} onValueChange={setConfirmarLeitura} aria-label="confirmaLeitura" />
+        <CustomButton title="Confirmar" loading={isLoading} onPress={handleFinsh} />
+      </View>
     </SafeAreaView>
   );
 }

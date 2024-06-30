@@ -20,9 +20,9 @@ export default function App() {
     // @ts-ignore
     <AuthContextProvider>
       <StatusBar
-        translucent
-        backgroundColor="#525252"
         barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
       />
       {fontsLoaded ? <Routes /> : <Loading />}
     </AuthContextProvider>

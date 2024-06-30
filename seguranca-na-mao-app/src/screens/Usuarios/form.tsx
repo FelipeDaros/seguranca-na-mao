@@ -1,4 +1,3 @@
-import { ScrollView, Select, Text, VStack, useToast } from "native-base";
 import Header from "../../components/Header";
 import { Controller, useForm } from "react-hook-form";
 import CustomInput from "../../components/CustomInput";
@@ -6,19 +5,11 @@ import { useEffect, useState } from "react";
 import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { IPosto } from "../../interfaces/IPosto";
-import Loading from "../../components/Loading";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "../../components/CustomButton";
 import axios from "axios";
-
-interface IUser {
-    nome: string;
-    senha: string;
-    email: string;
-    posto_id: number;
-    tipo_usuario: string;
-    empresa_id: number;
-}
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import CustomSelect from "../../components/CustomSelect";
 
 interface IEmpresa {
     id: number;
@@ -32,13 +23,31 @@ interface IEmpresa {
     email: string;
 }
 
+interface IUser {
+    nome: string;
+    senha: string;
+    email: string;
+    posto_id: number;
+    tipo_usuario: string;
+    empresa_id: number;
+}
+
 const tiposUsuarios = [
-    "VIGILANTE",
-    "SUPERVISOR"
+    {
+        id: "VIGILANTE",
+        nome: "VIGILANTE"
+    },
+    {
+        id: "SUPERVISOR",
+        nome: "SUPERVISOR"
+    },
+    {
+        id: "ADMINISTRADOR",
+        nome: "ADMINISTRADOR"
+    }
 ]
 
 export function FormUsuarios() {
-    const toast = useToast();
     const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [postos, setPostos] = useState<IPosto[]>([]);
@@ -65,12 +74,7 @@ export function FormUsuarios() {
             const { data } = await api.get(`/posto-servico/${id}`);
             setPostos(data);
         } catch (error) {
-            toast.show({
-                title: "Erro ao buscar os postos de serviço!",
-                duration: 3000,
-                bg: "error.500",
-                placement: "top",
-            });
+            Alert.alert("Cadastrar", "Erro ao buscar os postos de serviço!");
         } finally {
             setIsLoading(false)
         }
@@ -88,28 +92,13 @@ export function FormUsuarios() {
                 email_responsavel: user?.user?.email,
                 tipo_usuario: tipo_usuario
             });
-            toast.show({
-                title: "Usuário criado com sucesso!",
-                duration: 3000,
-                bg: "green.500",
-                placement: "top",
-            });
             reset();
+            Alert.alert("Cadastrar", "Usuário criado com sucesso!");
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
-                return toast.show({
-                    title: error.response?.data.message,
-                    duration: 3000,
-                    bg: "error.500",
-                    placement: "top",
-                });
+                return Alert.alert("Cadastrar", error.response?.data.message);
             }
-            toast.show({
-                title: "Erro ao cadastrar Usuário!",
-                duration: 3000,
-                bg: "error.500",
-                placement: "top",
-            });
+            Alert.alert("Cadastrar", "Erro ao cadastrar Usuário!");
         } finally {
             setIsLoading(false);
         }
@@ -121,12 +110,7 @@ export function FormUsuarios() {
             setEmpresas(data);
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                return toast.show({
-                    title: error.response?.data.message,
-                    duration: 3000,
-                    bg: "error.500",
-                    placement: "top",
-                });
+                return Alert.alert("Cadastrar", error.response?.data.message);
             }
         }
     }
@@ -147,168 +131,134 @@ export function FormUsuarios() {
     }, [empresa]);
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <Header back />
-            {isLoading &&
-                <VStack flex={1} justifyContent="center" alignItems="center" mt="4">
-                    <Loading />
-                </VStack>}
-            {!isLoading &&
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <SafeAreaView className="flex-1 bg-background-escuro">
+                <Header back />
                 <ScrollView>
-                    <VStack alignItems="center" mt="4" mb="4">
-                        <Text fontFamily="mono" color="personColors.150" fontSize="lg">
-                            Painel de controle de usuários
-                        </Text>
-                        <VStack mt="5%">
-                            <Text mb="2" color="personColors.150" fontWeight="bold">Usuário</Text>
+                    <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+                        <Text className="text-white text-xl">Painel de controle de usuários</Text>
+                        <View className="w-full items-center my-5 gap-y-3">
                             <Controller
                                 control={control}
                                 rules={{
-                                    required: true,
+                                    maxLength: 100,
+                                    required: true
                                 }}
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <CustomInput
-                                        placeholder="ex: nometal"
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                    />
+                                    <View className="w-full justify-center items-center gap-y-2">
+                                        <View className="w-full items-center my-5 gap-y-2">
+                                            <Text className="font-bold text-white text-base">Nome</Text>
+                                            <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+                                            {errors.nome && <Text className="text-red-500">Campo é obrigatório</Text>}
+                                        </View>
+                                    </View>
                                 )}
                                 name="nome"
                             />
-                            {errors.nome && <Text color="danger.500">Campo obrigatório</Text>}
 
-                            <Text mb="2" mt="4" color="personColors.150" fontWeight="bold">Senha</Text>
                             <Controller
                                 control={control}
                                 rules={{
-                                    required: true,
+                                    maxLength: 100,
+                                    required: true
                                 }}
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <CustomInput
-                                        placeholder="ex: ****"
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                        type="password"
-                                    />
+                                    <View className="w-full justify-center items-center gap-y-2">
+                                        <View className="w-full items-center my-5 gap-y-2">
+                                            <Text className="font-bold text-white text-base">Senha</Text>
+                                            <CustomInput secureTextEntry value={value} onChangeText={(text) => onChange(text)} />
+                                            {errors.senha && <Text className="text-red-500">Campo é obrigatório</Text>}
+                                        </View>
+                                    </View>
                                 )}
                                 name="senha"
                             />
-                            {errors.senha && <Text color="danger.500">Campo obrigatório</Text>}
 
-                            <Text mb="2" mt="4" color="personColors.150" fontWeight="bold">Email</Text>
                             <Controller
                                 control={control}
                                 rules={{
-                                    required: true,
+                                    maxLength: 100,
+                                    required: true
                                 }}
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <CustomInput
-                                        placeholder="ex: teste@hotmail.com"
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                    />
+                                    <View className="w-full justify-center items-center gap-y-2">
+                                        <View className="w-full items-center my-5 gap-y-2">
+                                            <Text className="font-bold text-white text-base">Email</Text>
+                                            <CustomInput value={value} onChangeText={(text) => onChange(text)} />
+                                            {errors.email && <Text className="text-red-500">Campo é obrigatório</Text>}
+                                        </View>
+                                    </View>
                                 )}
                                 name="email"
                             />
-                            {errors.email && <Text color="danger.500">Campo obrigatório</Text>}
-                            {user?.user.tipo_usuario === 'ADMINISTRADOR' &&
-                                <>
-                                    <Text mt="4" color="personColors.150" fontWeight="bold">Empresa</Text>
-                                    <Controller
-                                        control={control}
-                                        rules={{
-                                            required: user?.user.tipo_usuario === 'ADMINISTRADOR',
-                                        }}
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <Select
-                                                mt="4"
-                                                placeholder="Selecione aqui"
-                                                // @ts-ignore
-                                                selectedValue={value}
-                                                onValueChange={(empresa: any) => {
-                                                    setEmpresa(empresa);
-                                                    onChange(empresa);
-                                                }}
-                                            >
-                                                {empresas.map((empresa: any) => (
-                                                    <Select.Item
-                                                        key={empresa?.id}
-                                                        label={empresa?.nome}
-                                                        value={empresa.id}
-                                                    />
-                                                ))}
-                                            </Select>
-                                        )}
-                                        name="empresa_id"
-                                    />
-                                    {errors.empresa_id && <Text color="danger.500">Campo obrigatório</Text>}
-                                </>
+
+                            {user?.user.tipo_usuario === "ADMINISTRADOR" &&
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        maxLength: 1,
+                                        required: user?.user.tipo_usuario === "ADMINISTRADOR"
+                                    }}
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <View className="w-full justify-center items-center gap-y-2">
+                                            <View className="w-full items-center my-5 gap-y-2">
+                                                <Text className="font-bold text-white text-base mb-2">Empresa</Text>
+                                                <CustomSelect value={value} isDisabled={isLoading} data={empresas} selectValue={e => {
+                                                    onChange(e)
+                                                    // @ts-ignore
+                                                    setEmpresa(e);
+                                                }} />
+                                                {errors.empresa_id && <Text className="text-red-500">Campo é obrigatório</Text>}
+                                            </View>
+                                        </View>
+                                    )}
+                                    name="empresa_id"
+                                />
                             }
-                            <Text mt="4" color="personColors.150" fontWeight="bold">Posto de servico</Text>
+
                             <Controller
                                 control={control}
                                 rules={{
-                                    required: true,
+                                    maxLength: 1,
+                                    required: false
                                 }}
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <Select
-                                        mt="4"
-                                        placeholder="Selecione aqui"
-                                        // @ts-ignore
-                                        selectedValue={value}
-                                        onValueChange={(posto: any) => {
-                                            onChange(posto)
-                                        }}
-                                        isDisabled={user?.user.tipo_usuario === 'ADMINISTRADOR' && !empresa}
-                                    >
-                                        {postos.map((posto: any) => (
-                                            <Select.Item
-                                                key={posto?.id}
-                                                label={posto?.nome}
-                                                value={posto?.id}
-                                            />
-                                        ))}
-                                    </Select>
+                                    <View className="w-full justify-center items-center gap-y-2">
+                                        <View className="w-full items-center my-5 gap-y-2">
+                                            <Text className="font-bold text-white text-base mb-2">Posto serviço</Text>
+                                            <CustomSelect value={value} isDisabled={isLoading || user?.user.tipo_usuario === "ADMINISTRADOR" && !empresas.length} data={postos} selectValue={onChange} />
+                                            {errors.posto_id && <Text className="text-red-500">Campo é obrigatório</Text>}
+                                        </View>
+                                    </View>
                                 )}
                                 name="posto_id"
                             />
-                            {errors.posto_id && <Text color="danger.500">Campo obrigatório</Text>}
-                            <Text mt="4" color="personColors.150" fontWeight="bold">Tipo usuário</Text>
+
                             <Controller
                                 control={control}
                                 rules={{
-                                    required: true,
+                                    maxLength: 20,
+                                    required: true
                                 }}
                                 render={({ field: { onChange, onBlur, value } }) => (
-                                    <Select
-                                        mt="4"
-                                        placeholder="Selecione aqui"
-                                        selectedValue={value}
-                                        onValueChange={(value: any) => {
-                                            onChange(value)
-                                        }}
-                                        isDisabled={user?.user.tipo_usuario === 'ADMINISTRADOR' && !empresa}
-                                    >
-                                        {tiposUsuarios.map((tipo: any) => (
-                                            <Select.Item
-                                                key={tipo}
-                                                label={tipo}
-                                                value={tipo}
-                                            />
-                                        ))}
-                                    </Select>
+                                    <View className="w-full justify-center items-center gap-y-2">
+                                        <View className="w-full items-center my-5 gap-y-2">
+                                            <Text className="font-bold text-white text-base mb-2">Tipo usuário</Text>
+                                            <CustomSelect value={value} isDisabled={isLoading} data={tiposUsuarios} selectValue={onChange} />
+                                            {errors.tipo_usuario && <Text className="text-red-500">Campo é obrigatório</Text>}
+                                        </View>
+                                    </View>
                                 )}
                                 name="tipo_usuario"
                             />
-                            {errors.posto_id && <Text color="danger.500">Campo obrigatório</Text>}
-                        </VStack>
-                        <CustomButton title="Salvar" mt="6" onPress={handleSubmit(handleSave)} />
-                    </VStack>
+                        </View>
+                        <CustomButton title="Salvar" loading={isLoading} onPress={handleSubmit(handleSave)} />
+                    </View>
                 </ScrollView>
-            }
-        </SafeAreaView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
     )
 }

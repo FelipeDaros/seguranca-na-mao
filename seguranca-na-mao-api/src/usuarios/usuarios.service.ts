@@ -41,7 +41,7 @@ export class UsuariosService {
           tipo_usuario: user.tipo_usuario.toUpperCase()
         },
       });
-      
+
       await this.mailService.enviarEmailUsuarioCriado(user);
 
       return usuario;
@@ -53,25 +53,26 @@ export class UsuariosService {
   public async findAll(tipo_usuario: string, empresa_id: number, id_logado: string) {
     let usuarios = [];
 
-    if(tipo_usuario === 'SUPERVISOR'){
+    if (tipo_usuario === 'SUPERVISOR') {
       usuarios = await prisma.usuario.findMany({
         where: {
           empresa_id,
           tipo_usuario: 'VIGILANTE',
           id: {
             not: id_logado
-          }
+          },
+          ativo: true
         }
       });
     }
-
-    if(tipo_usuario === 'ADMINISTRADOR'){
+    
+    if (tipo_usuario === 'ADMINISTRADOR') {
       usuarios = await prisma.usuario.findMany({
         where: {
-          empresa_id,
           id: {
-            not: id_logado
-          }
+            not: id_logado,
+          },
+          ativo: true
         }
       });
     }
@@ -80,9 +81,10 @@ export class UsuariosService {
   }
 
   public async findOne(id: string) {
-    const usuario = await prisma.usuario.findUnique({
+    const usuario = await prisma.usuario.findFirst({
       where: {
         id,
+        ativo: true
       },
     });
     if (!usuario) {
@@ -115,6 +117,7 @@ export class UsuariosService {
   }
 
   public async remove(id: string): Promise<void> {
+
     const usuario = await prisma.usuario.findUnique({
       where: {
         id,
@@ -127,10 +130,16 @@ export class UsuariosService {
       );
     }
 
-    await prisma.usuario.delete({
+    const updateUser = {
+      ...usuario,
+      ativo: false
+    }
+
+    await prisma.usuario.update({
       where: {
-        id,
+        id
       },
+      data: updateUser
     });
 
     return;

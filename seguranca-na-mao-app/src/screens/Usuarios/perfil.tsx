@@ -1,4 +1,3 @@
-import { Button, Text, VStack, ScrollView, useToast } from "native-base";
 import Header from "../../components/Header";
 import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -16,7 +15,6 @@ interface IUser {
 }
 
 export function Perfil() {
-    const toast = useToast();
     const { user, updateUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -47,12 +45,12 @@ export function Perfil() {
         try {
             setIsLoading(true);
             await api.put(`/usuarios/${user?.user.id}`, userData);
-            toast.show({
-                title: "Usuário atualizado com sucesso!",
-                duration: 3000,
-                bg: "personColors.50",
-                placement: "top",
-            });
+            // toast.show({
+            //     title: "Usuário atualizado com sucesso!",
+            //     duration: 3000,
+            //     bg: "personColors.50",
+            //     placement: "top",
+            // });
 
             const updateUserContext = {
                 ...user,
@@ -66,12 +64,12 @@ export function Perfil() {
              // @ts-ignore
             await updateUser(updateUserContext);
         } catch (error) {
-            toast.show({
-                title: "Erro ao atualizar usuário!",
-                duration: 3000,
-                bg: "error.500",
-                placement: "top",
-            });
+            // toast.show({
+            //     title: "Erro ao atualizar usuário!",
+            //     duration: 3000,
+            //     bg: "error.500",
+            //     placement: "top",
+            // });
         } finally {
             setIsLoading(false);
         }
@@ -86,7 +84,7 @@ export function Perfil() {
     return (
         <SafeAreaView>
             <Header back />
-            <VStack justifyContent="center" alignItems="center" mt="4" mb="4">
+            {/* <VStack justifyContent="center" alignItems="center" mt="4" mb="4">
                 <Text fontFamily="mono" color="personColors.150" fontSize="lg">
                     Perfil do usuário
                 </Text>
@@ -163,7 +161,7 @@ export function Perfil() {
                     {errors.tipo_usuario && <Text color="danger.500">Campo obrigatório</Text>}
                 </VStack>
                 <Button isLoading={isLoading} mt="6" w="80%" rounded="full" bgColor="personColors.50" onPress={handleSubmit(handleSave)}>Salvar</Button>
-            </VStack>
+            </VStack> */}
         </SafeAreaView>
     )
 }

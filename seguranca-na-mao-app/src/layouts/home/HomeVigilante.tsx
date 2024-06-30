@@ -1,7 +1,7 @@
-// import { Pressable, ScrollView, Text, VStack, useToast } from "native-base";
+import { View, Text, Pressable, Alert } from "react-native";
+import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import moment from "moment-timezone";
-import Loading from "../../components/Loading";
 import CardsHome from "../../components/CardsHome";
 import { useEffect, useState } from "react";
 import { api } from "../../config/api";
@@ -14,11 +14,9 @@ import { sincronizarPontos } from "../../services/sincronizarPontos";
 import { sincronizarRondas } from "../../services/sincronizarRondas";
 import { sincronizarAlertas } from "../../services/sincronizarAlertas";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import { getAllPontos } from "../../store/PontoStorage";
 
 export function HomeVigilante() {
-  const navigation = useNavigation();
-  const toast = useToast();
   const { user, handleRonda, isConnected, handleAlertaVigia } = useAuth();
   const [loading, setLoading] = useState(false);
   const [userConfigAlerta, setUserConfigAlerta] = useState<IConfiguracoes | undefined>({} as IConfiguracoes);
@@ -32,28 +30,12 @@ export function HomeVigilante() {
         verificado: false,
         empresa_id: user?.user?.empresa_id
       });
-      toast.show({
-        title: "Pânico emitido com sucesso!",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      Alert.alert("Panico", "Foi emitido com sucesso!");
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        return toast.show({
-          title: error?.response?.data.message,
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
+        return Alert.alert("Panico", error?.response?.data.message);
       }
-
-      toast.show({
-        title: "Erro ao emitir!",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      return Alert.alert("Panico", "Erro ao emitir!");
     } finally {
       setLoading(false);
     }
@@ -65,22 +47,11 @@ export function HomeVigilante() {
     const isValidHorario = moment(data).diff(user?.user?.horario_alerta, String(userConfigAlerta?.parametro) as any);
 
     if (!userConfigAlerta?.parametro) {
-      return toast.show({
-        title: 'Usuário sem configuração, entre em contato com o supervisor para realizar a configuração',
-        duration: 5000,
-        bg: "warning.400",
-        placement: "top",
-      });
+      Alert.alert("Alerta", "Usuário sem configuração, entre em contato com o supervisor para realizar a configuração");
     }
 
     if (isValidHorario < Number(userConfigAlerta?.valor)) {
-      toast.show({
-        title: 'A emissão não está agendada para o horário atual!',
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
-
+      Alert.alert("Alerta", "A emissão não está agendada para o horário atual!");
       return;
     }
 
@@ -90,31 +61,13 @@ export function HomeVigilante() {
       await handleAlertaVigia(user?.user.id, data);
       await scheduleNotification(userConfigAlerta);
       await alertaVigiaSave();
-
-      toast.show({
-        title: "Alerta emitido com sucesso!",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      Alert.alert("Alerta", "Alerta emitido com sucesso!");
       return;
     } catch (error: any) {
       if (!!error.response) {
-        toast.show({
-          title: error.response.data.message,
-          duration: 3000,
-          bg: "error.500",
-          placement: "top",
-        });
-        return;
+        return Alert.alert("Alerta", error.response.data.message);
       }
-      toast.show({
-        title: "Erro ao emitir o alerta",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
-      return;
+      Alert.alert("Alerta", "Erro ao emitir o alerta");
     } finally {
       setLoading(false);
     }
@@ -147,12 +100,7 @@ export function HomeVigilante() {
       await gerarRondasService(user);
       handleRonda(user?.user?.id, data);
     } catch (error) {
-      toast.show({
-        title: "Ocorreu um erro ao tentar gerar as rondas",
-        duration: 3000,
-        bg: "error.500",
-        placement: "top",
-      });
+      Alert.alert("Gerar rondas", "Ocorreu um erro ao tentar gerar as rondas");
     }
   }
 
@@ -181,45 +129,32 @@ export function HomeVigilante() {
   }, [isConnected]);
 
   return (
-    <>
-      {/* <VStack justifyContent="center" alignItems="center" mt="4">
-        {moment(user?.proximaRonda).isAfter(moment().format()) &&
-          <>
-            <Text color="personColors.150"
-              fontFamily="heading"
-              fontSize="lg">Alerta Vigia</Text>
-            <Pressable _disabled={{ opacity: 0.5 }} disabled={loading} onPress={alerta} _pressed={{ bg: 'gray.300' }} bg="personColors.50" w="70%" h="20" mt="4" rounded="md" justifyContent="center" alignItems="center">
-              <Text color="personColors.100">Pressione para emitir</Text>
-              <Text color="personColors.100">Próximo horario: {!!user?.ultimoAlerta ? moment(user?.ultimoAlerta).add(Number(userConfigAlerta?.valor), String(userConfigAlerta?.parametro) as any).format('HH:mm:ss') : 'Não há horário'}</Text>
-              {loading && <Loading />}
-            </Pressable>
-          </>
-        }
-        {moment(user?.proximaRonda).isBefore(moment().format()) &&
-          <>
-            <Text color="personColors.150"
-              fontFamily="heading"
-              fontSize="lg">Alerta Vigia</Text>
-            <Pressable _disabled={{ opacity: 0.5 }} disabled={loading} onPress={gerarRondas} _pressed={{ bg: 'gray.300' }} bg="error.500" w="70%" h="20" mt="4" rounded="md" justifyContent="center" alignItems="center">
-              <Text color="personColors.100">GERAR RONDAS!</Text>
-            </Pressable>
-          </>
-        }
-      </VStack>
-      <VStack justifyContent="center" alignItems="center" mt="4">
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} m="2">
-          <CardsHome
-            name="Panico"
-            iconName="account-alert-outline"
-            onLongPress={panico}
-          />
-          <CardsHome
-            name="Ocorrências"
-            route="Occurrence"
-            iconName="pistol"
-          />
-        </ScrollView>
-      </VStack> */}
-    </>
+    <View className="flex-1 bg-background-escuro p-6">
+      {moment(user?.proximaRonda).isAfter(moment().format()) &&
+        <Pressable disabled={loading} onPress={alerta} className="bg-green-escuro rounded-md p-2 items-center justify-center">
+          <Text className="text-white font-bold text-lg">Alerta Vigia</Text>
+          <Text className="text-white">Pressione para emitir</Text>
+          <Text className="text-white">Próximo horario: {!!user?.ultimoAlerta ? moment(user?.ultimoAlerta).add(Number(userConfigAlerta?.valor), String(userConfigAlerta?.parametro) as any).format('HH:mm:ss') : 'Não há horário'}</Text>
+        </Pressable>
+      }
+      {moment(user?.proximaRonda).isBefore(moment().format()) &&
+        <Pressable disabled={loading} onPress={gerarRondas} className="bg-red-escuro rounded-md p-2 items-center justify-center">
+          <Text className="text-white font-bold text-base">Alerta Vigia</Text>
+          <Text className="text-white font-bold text-xl">GERAR RONDAS!</Text>
+        </Pressable>
+      }
+      <View className="mt-2 flex-row items-center justify-center">
+        <CardsHome
+          name="Panico"
+          iconName="account-alert-outline"
+          onLongPress={panico}
+        />
+        <CardsHome
+          name="Ocorrências"
+          route="Occurrence"
+          iconName="pistol"
+        />
+      </View>
+    </View>
   )
 }

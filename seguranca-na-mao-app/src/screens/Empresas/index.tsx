@@ -1,12 +1,10 @@
-import { FlatList, ScrollView, Text, VStack } from "native-base";
 import Header from "../../components/Header";
 import { api } from "../../config/api";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import Loading from "../../components/Loading";
-import { CardEmpresa } from "./Components/CardEmpresa";
 import CustomButton from "../../components/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList, Pressable, Text, View } from "react-native";
 
 type EmpresaProps = {
   id: number;
@@ -45,24 +43,24 @@ export function Empresas() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView className="flex-1 bg-background-escuro">
       <Header back />
-      <Text color="personColors.150" textAlign="center" fontFamily="mono" fontSize="lg" mt="4">
-        Empresas
-      </Text>
-      {loading && <Loading />}
-      {!loading &&
+      <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+        <Text className="text-white text-xl">Empresas</Text>
         <FlatList
-          mt="4"
           showsVerticalScrollIndicator={false}
-          height="3/5"
           data={empresas}
           keyExtractor={(item, index) => item.id.toString()}
-          renderItem={({ item }) => <CardEmpresa key={item.id} empresa={item} selecionar={() => handleEmpresa(item.id)} />}
+          renderItem={({ item }) =>
+            <Pressable onPress={() => handleEmpresa(item.id)} key={item.id} className="flex-col px-2 mt-2 w-72 h-20 items-center justify-center bg-zinc-800 rounded-md">
+              <Text className="text-lg text-white">Nome: {item.nome}</Text>
+              <Text className="text-lg text-white overflow-ellipsis">Cidade: {item.cidade}</Text>
+            </Pressable>
+          }
         />
-      }
-      {/* @ts-ignore */}
-      <CustomButton title="Cadastrar" alignSelf="center" onPress={() => navigation.navigate('RegisterEmpresa')} />
+        {/* @ts-ignore */}
+        <CustomButton title="Cadastrar" loading={loading} onPress={() => navigation.navigate('RegisterEmpresa')} />
+      </View>
     </SafeAreaView>
   )
 }

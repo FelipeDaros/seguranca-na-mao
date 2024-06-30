@@ -29,6 +29,7 @@ model Usuario {
   tipo_usuario       String?
   status_logado      String?
   welcome_screen     Boolean              @default(false)
+  ativo              Boolean              @default(true)
   Panico             Panico[]
   Servico            Servico[]
   RegistroOcorrencia RegistroOcorrencia[]

@@ -1,16 +1,16 @@
 import Header from "../../components/Header";
 import { Controller, useForm } from "react-hook-form";
-import CustomInput from "../../components/CustomInput";
-import CustomSelect from "../../components/CustomSelect";
 import { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import * as Location from "expo-location";
-import { Alert, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { api } from "../../config/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
+import CustomInput from "../../components/CustomInput";
+import CustomSelect from "../../components/CustomSelect";
 
 type FormData = {
   nome: string;
@@ -19,9 +19,15 @@ type FormData = {
   longitude: number;
 };
 
+
 export default function PointCreate() {
   const navigation = useNavigation();
   const { user, signOut } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [progress, setProgress] = useState<number>(0);
+  const [location, setLocation] = useState(null);
 
   const {
     control,
@@ -30,10 +36,6 @@ export default function PointCreate() {
     reset,
     formState: { errors },
   } = useForm<FormData>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [progress, setProgress] = useState<number>(0);
-  const [location, setLocation] = useState(null);
 
   async function buscarLocalizacao() {
     setProgress(25);
@@ -64,36 +66,29 @@ export default function PointCreate() {
         posto_id,
         email: user?.user?.email
       });
-      toast.show({
-        title: "Ponto cadastrado com sucesso!",
-        duration: 3000,
-        bg: "personColors.50",
-        placement: "top",
-      });
+      Alert.alert("Salvar", "Ponto cadastrado com sucesso!");
       reset();
       navigation.goBack();
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        return;
+        return Alert.alert("Salvar", error.response?.data?.message);
       }
     } finally {
       setIsLoading(false);
     }
   }
 
-  const handleSelectItem = (item: any) => {
-    setValue("posto_id", item);
-  };
-
   async function buscarPostoVinculadoAoUsuario() {
     try {
+      setIsLoading(true);
       const { data } = await api.get(`/posto-servico/${user?.user.empresa_id}`);
       setData(data);
     } catch (error: any) {
-      if (error.response.status === 401) {
-        signOut();
-        return;
+      if (axios.isAxiosError(error)) {
+        return Alert.alert("Salvar", error.response?.data?.message);
       }
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -103,49 +98,49 @@ export default function PointCreate() {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1 bg-background-escuro">
       <Header back />
-      <View className="items-center justify-center">
-        {/* <Text color="personColors.150" fontFamily="mono" fontSize="lg">
-          Cadastrar ponto
-        </Text> */}
-        {/* <VStack mt="20%">
+      <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+        <Text className="text-white text-xl">Cadastrar ponto</Text>
+        <View className="w-full items-center my-5 gap-y-3">
           <Controller
             control={control}
             rules={{
               maxLength: 100,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <>
-                <Text color="personColors.150" fontFamily="body" fontSize="md">
-                  Nome
-                </Text>
-                <CustomInput
-                  bg="white"
-                  mt="2"
-                  onChangeText={onChange}
-                  value={value}
-                />
-              </>
+              <View className="w-full justify-center items-center gap-y-2">
+                <View className="w-full items-center my-5 gap-y-2">
+                  <Text className="text-white text-lg">
+                    Nome
+                  </Text>
+                  <CustomInput
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                </View>
+              </View>
             )}
             name="nome"
           />
 
-          <Text
-            color="personColors.150"
-            mt="10%"
-            fontFamily="body"
-            fontSize="md"
-          >
-            Posto Vinculado
-          </Text>
-          <CustomSelect values={data} mt="2" selectItem={handleSelectItem} />
-        </VStack> */}
-        {/* <VStack mt="12" alignItems="center">
-          <Text fontFamily="mono">Geolocalização</Text>
-          <Progress value={progress} mx="4" w="64" mt="4" />
-        </VStack>
-        <CustomButton isLoading={isLoading} title="Salvar" onPress={handleSubmit(handleSave)} mt="6" /> */}
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View className="w-full justify-center items-center gap-y-2">
+                <Text className="text-white text-xl mb-2">Posto Vinculado</Text>
+                <CustomSelect value={value} isDisabled={isLoading} data={data} selectValue={onChange} />
+              </View>
+            )}
+            name="posto_id"
+          />
+          <View className="w-full justify-center items-center">
+          </View>
+        </View>
+        <CustomButton title="Salvar" loading={isLoading} onPress={handleSubmit(handleSave)} />
       </View>
     </SafeAreaView>
   );
