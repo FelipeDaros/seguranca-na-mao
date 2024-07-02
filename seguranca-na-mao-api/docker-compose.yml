@@ -21,7 +21,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./_data/postgresql:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -29,6 +29,11 @@ services:
       # - POSTGRES_INITDB_ARGS="--encoding=UTF8"
     networks: 
       - nest
+
+volumes:
+  postgres_data:
+    driver: local
+
 networks:
-    nest:
-        driver: bridge
+  nest:
+    driver: bridge
