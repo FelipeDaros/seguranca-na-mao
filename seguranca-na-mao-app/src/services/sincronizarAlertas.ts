@@ -2,7 +2,14 @@ import { api } from "../config/api";
 import { IUsuario } from "../interfaces/IUsuario";
 import { getAllAlertas, updateAlerta } from "../store/AlertaStorage";
 
+import { useNetInfo } from "@react-native-community/netinfo";
+
+
 export async function sincronizarAlertas(user: IUsuario) {
+  const { type } = useNetInfo();
+
+  if(type !== 'wifi') return;
+  
   const alertasParaSincronizar = (await getAllAlertas()).filter(item => !item.isSincronized);
   
   if (alertasParaSincronizar.length) {

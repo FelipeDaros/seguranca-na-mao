@@ -5,10 +5,16 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "packagerOpts": {
       "config": "metro.config.js",
-      "sourceExts": ["js", "jsx", "ts", "tsx", "svg"]
+      "sourceExts": [
+        "js",
+        "jsx",
+        "ts",
+        "tsx",
+        "svg"
+      ]
     },
     "splash": {
       "image": "./assets/splash.png",
@@ -30,12 +36,20 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA"
       ],
-      "package": "app.segurancanamao"
+      "package": "com.segurancanamao.segurancanamao"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-build-properties", 
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          },
+      }
+    ],
       [
         "expo-location",
         {
@@ -66,14 +80,15 @@
           "sounds": [],
           "icon": "assets/icon.png"
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "ios": {
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access camera.",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
       },
-      "bundleIdentifier": "app.segurancanamao"
+      "bundleIdentifier": "com.segurancanamao.segurancanamao"
     },
     "extra": {
       "eas": {
