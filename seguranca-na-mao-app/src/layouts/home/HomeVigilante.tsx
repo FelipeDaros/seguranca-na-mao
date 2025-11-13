@@ -112,7 +112,10 @@ export function HomeVigilante() {
     setUserConfigAlerta(configuracao);
 
     if (user?.user.tipo_usuario === 'VIGILANTE') {
-      sincronizarPontos(user);
+      sincronizarPontos(user, (current, total, remaining) => {
+      const porcentagem = Math.round((current / total) * 100);
+      console.log(`📊 ${current}/${total} (${porcentagem}%) | Faltam: ${remaining}`);
+    })
     }
 
     if (moment(user?.proximaRonda).isBefore(moment().format())) {

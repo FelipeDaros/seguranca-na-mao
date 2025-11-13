@@ -11,7 +11,7 @@ type Props = {
 export default function Header({ back }: Props) {
   const netInfo = useNetInfo();
   const navigation = useNavigation();
-  const { user, signOut, isConnected, handleFinishDay } = useAuth();
+  const { user, signOut, isConnected } = useAuth();
   //@ts-ignore
   const nomeUsuario = user?.user.nome[0].toUpperCase() + user?.user.nome?.substr(1);
 
@@ -28,8 +28,6 @@ export default function Header({ back }: Props) {
     if (!netInfo.isConnected) {
       Alert.alert("Sair", "Para finalizar expediente é necessário estar conectado");
     }
-    
-    return handleFinishDay();
   }
 
   function chooseValue(selected: any) {
@@ -46,7 +44,7 @@ export default function Header({ back }: Props) {
   return (
     <View className="bg-background-escuro gap-y-2 h-20 justify-center">
       {!isConnected &&
-        <View className="flex-row justify-center h-4 items-center bg-red-claro">
+        <View className="flex-row justify-center h-8 items-center bg-red-claro">
           <Text className="text-white font-bold">Você está sem conexão!</Text>
         </View>
       }

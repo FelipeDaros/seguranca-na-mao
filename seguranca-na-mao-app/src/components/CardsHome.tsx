@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable, PressableProps, Text, View } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type Props = PressableProps & {
   name: string;
@@ -9,11 +10,10 @@ type Props = PressableProps & {
 };
 
 export default function CardsHome({ name, route, iconName, ...rest }: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   function navigateRoute(route: string) {
-    // @ts-ignore
-    navigation.navigate(route);
+    navigation.navigate(route as never);
   }
 
   return (

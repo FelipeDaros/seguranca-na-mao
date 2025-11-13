@@ -17,7 +17,7 @@ type AuthContextDataProps = {
   handleAlertaVigia(id: string, data: Date | string): Promise<void>;
   updateUser(user: IUsuario): Promise<void>;
   handleRonda(id: string, data: Date | string): Promise<void>;
-  handleFinishDay(): Promise<void>;
+  // handleFinishDay(): Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextDataProps>(
@@ -53,23 +53,23 @@ const AuthContextProvider: React.FC = ({ children }) => {
 
   }, [netInfo.isConnected]);
 
-  async function handleFinishDay(): Promise<void> {
-    const storagedUser = await AsyncStorage.getItem("@SEGMAO:user");
+  // async function handleFinishDay(): Promise<void> {
+  //   const storagedUser = await AsyncStorage.getItem("@SEGMAO:user");
 
-    // @ts-ignore
-    const userParsed: IUsuario = JSON.parse(storagedUser);
+  //   // @ts-ignore
+  //   const userParsed: IUsuario = JSON.parse(storagedUser);
 
-    userParsed.user.status_logado = 'FINALIZADO';
-    userParsed.isRondaActive = false;
+  //   userParsed.user.status_logado = 'FINALIZADO';
+  //   userParsed.isRondaActive = false;
     
-    setUser(userParsed);
+  //   setUser(userParsed);
 
-    await AsyncStorage.setItem("@SEGMAO:user", JSON.stringify(userParsed));
+  //   await AsyncStorage.setItem("@SEGMAO:user", JSON.stringify(userParsed));
 
-    await api.put(`/usuarios/${userParsed.user.id}`, userParsed.user)
+  //   await api.put(`/usuarios/${userParsed.user.id}`, userParsed.user)
 
-    return
-  }
+  //   return
+  // }
 
   async function updateUser(user: IUsuario): Promise<void> {
     await AsyncStorage.setItem("@SEGMAO:user", JSON.stringify(user));
@@ -201,7 +201,7 @@ const AuthContextProvider: React.FC = ({ children }) => {
 
   return (
     // @ts-ignore
-    <AuthContext.Provider value={{ user, signIn, signOut, handleChecked, handleAlertaVigia, updateUser, handleRonda, isConnected, handleFinishDay }}>
+    <AuthContext.Provider value={{ user, signIn, signOut, handleChecked, handleAlertaVigia, updateUser, handleRonda, isConnected }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,8 +1,10 @@
-import { Button, Image, Modal, ScrollView, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { IOcorrenciaProps } from "../Interfaces/IOcorrence";
 import { api } from "../../../config/api";
 import dayjs from "dayjs";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "../../../components/Header";
+import { FlatList, View, Text } from "react-native";
 
 type Props = {
   id: number | undefined;
@@ -26,33 +28,13 @@ export default function ModalOccurrenceSelect({ id, open, setIsClose }: Props) {
     }
   }, [open]);
   return (
-    <Modal isOpen={open} onClose={() => setIsClose()}>
-      <Modal.Content>
-        <Modal.CloseButton />
-        <Modal.Header>{ocorrencia?.titulo}</Modal.Header>
-        <Modal.Body>
-          <Text fontFamily="mono" color="personColors.150">
-            Data: {dayjs(ocorrencia?.dataOcorrencia).format('DD/MM/YYYY')}
-          </Text>
-          <Text
-            fontFamily="body"
-            color="personColors.150"
-            textAlign="center"
-            mt="2"
-          >
-            {ocorrencia?.descricao}
-          </Text>
-          <Text fontFamily="mono" color="personColors.150" mt="4">
-            Usuário resposável: {ocorrencia?.User.nome}
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-            {ocorrencia?.FotosOcorrencia.map(item => (
-              <Image key={item.id} style={{height: 200, width: 250}} source={{uri: 'data:image/png;base64,'+item.url}} alt="foto"/>
-            ))}
-            
-          </ScrollView>
-        </Modal.Body>
-      </Modal.Content>
-    </Modal>
+    <SafeAreaView className="flex-1 bg-background-escuro">
+          <Header back />
+          <View className="flex-1 flex-col items-center p-6 gap-y-3 bg-background-escuro">
+            <Text className="text-white text-xl">Empresas</Text>
+            {/* @ts-ignore */}
+            <CustomButton title="Cadastrar" loading={loading} onPress={() => navigation.navigate('RegisterEmpresa')} />
+          </View>
+        </SafeAreaView>
   );
 }

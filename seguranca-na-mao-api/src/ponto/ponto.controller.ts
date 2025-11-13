@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Res,
+  Query,
 } from '@nestjs/common';
 import { PontoService } from './ponto.service';
 import { CreatePontoDto } from './dto/create-ponto.dto';
@@ -61,7 +62,15 @@ export class PontoController {
   }
 
   @Get('/sincronizar/:posto_id')
-  public async sincronizarPontos(@Param('posto_id') posto_id: string): Promise<Ponto[]>{
-    return this.pontoService.sincronizarPontos(+posto_id);
+  public async sincronizarPontos(
+    @Param('posto_id') posto_id: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string
+  ) {
+    return this.pontoService.sincronizarPontos(
+      +posto_id, 
+      page ? +page : 1, 
+      limit ? +limit : 100
+    );
   }
 }

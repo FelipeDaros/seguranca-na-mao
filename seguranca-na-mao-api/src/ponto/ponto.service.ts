@@ -124,15 +124,33 @@ export class PontoService {
     });
   }
 
-  public async sincronizarPontos(posto_id: number): Promise<Ponto[]> {
+  public async sincronizarPontos(posto_id: number, page: number = 1, limit: number = 100): Promise<{ pontos: Ponto[], total: number, hasMore: boolean }> {
     try {
-      const pontos = await prisma.ponto.findMany({
-        where: {
-          posto_id
-        }
-      });
+      const skip = (page - 1) * limit;
 
-      return pontos
+      const [pontos, total] = await Promise.all([
+        prisma.ponto.findMany({
+          where: {
+            posto_id
+          },
+          skip,
+          take: limit,
+          orderBy: {
+            id: 'asc'
+          }
+        }),
+        prisma.ponto.count({
+          where: {
+            posto_id
+          }
+        })
+      ]);
+
+      return {
+        pontos,
+        total,
+        hasMore: skip + pontos.length < total
+      };
     } catch (error) {
       throw new BadRequestException(error);
     }

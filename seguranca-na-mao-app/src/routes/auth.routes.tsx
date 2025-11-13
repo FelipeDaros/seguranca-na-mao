@@ -42,10 +42,9 @@ export function AuthRoutes() {
           <Screen name="Empresas" component={Empresas} />
           {/* <Screen name="EmpresaSelecionada" component={EmpresaSelecionada} /> */}
           <Screen name="RegisterEmpresa" component={RegisterEmpresa} />
-          {/* 
-          
           
           <Screen name="Occurrence" component={Occurrence} />
+          {/* 
           <Screen name="RegisterOccurrence" component={RegisterOccurrence} />
           <Screen name="RelatorioRonda" component={RelatorioRonda} />
           <Screen name="RelatorioAlertas" component={RelatorioAlertas} />
