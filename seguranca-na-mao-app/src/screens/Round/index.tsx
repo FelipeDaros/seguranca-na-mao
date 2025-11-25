@@ -9,7 +9,7 @@ import { Cards } from "./Components/Cards";
 export function Round() {
   const [isLoading, setIsLoading] = useState(false);
   const [rondas, setRondas] = useState<PropsRonda[]>([]);
-  const { user, signOut, updateUser } = useAuth();
+  const { userAuth, signOut, updateUser } = useAuth();
 
   async function buscarRondas() {
     try {
@@ -33,7 +33,7 @@ export function Round() {
 
     if (!data.length) {
       const userUpdateFinishRondas = {
-        ...user,
+        ...userAuth,
         isRondaActive: false
       }
       // @ts-ignore

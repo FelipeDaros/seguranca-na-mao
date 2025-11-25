@@ -14,13 +14,13 @@ export function FinishDay() {
   const [loading, setLoading] = useState(false);
   const [finishDay, setFinishDay] = useState<IFinishDay>();
   const [confirmaDevolucao, setConfirmaDevolucao] = useState(false);
-  const { user, signOut } = useAuth();
+  const { userAuth, signOut } = useAuth();
 
   async function fetchData() {
     try {
       setLoading(true);
       //@ts-ignore
-      const { data } = await api.get(`/import-app/finish-day/${user.user.id}`);
+      const { data } = await api.get(`/import-app/finish-day/${userAuth.user.id}`);
       setFinishDay(data);
     } catch (error) {
 
@@ -47,7 +47,7 @@ export function FinishDay() {
     try {
       setLoading(true);
       const payload = {
-        user_id: user?.user.id,
+        user_id: userAuth?.user.id,
         data: moment().toDate()
       };
 

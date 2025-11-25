@@ -12,7 +12,8 @@ export default function CustomInput({ inputRef, disabled = false, ...rest }: Pro
   return (
     <TextInput
       ref={inputRef}
-      className={disabled ? inputDisabled : "w-full h-12 p-2 items-center text-white text-lg bg-[#121214] rounded-md focus:border-[#00B37E] focus:border-[1px] placeholder:text-white"}
+      className={disabled ? inputDisabled : "w-full h-12 p-2 items-center text-white text-lg bg-[#121214] rounded-md focus:border-[#00B37E] focus:border-[1px]"}
+      placeholderTextColor={disabled ? "#9ca3af" : "#ffffff"}
       editable={!disabled}
       {...rest}
     />

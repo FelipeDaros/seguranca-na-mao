@@ -48,7 +48,7 @@ const tiposUsuarios = [
 ]
 
 export function FormUsuarios() {
-    const { user } = useAuth();
+    const { userAuth } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [postos, setPostos] = useState<IPosto[]>([]);
     const [empresas, setEmpresas] = useState<IEmpresa[]>([]);
@@ -88,8 +88,8 @@ export function FormUsuarios() {
                 senha: senha.toLowerCase().replace(/\s/g, ''),
                 email,
                 posto_id,
-                empresa_id: empresa_id ?? user?.user?.empresa_id,
-                email_responsavel: user?.user?.email,
+                empresa_id: empresa_id ?? userAuth?.user?.empresa_id,
+                email_responsavel: userAuth?.user?.email,
                 tipo_usuario: tipo_usuario
             });
             reset();
@@ -116,7 +116,7 @@ export function FormUsuarios() {
     }
 
     useEffect(() => {
-        if (user?.user.tipo_usuario === 'ADMINISTRADOR') {
+        if (userAuth?.user.tipo_usuario === 'ADMINISTRADOR') {
             if (!!empresa) {
                 buscarPostos(empresa);
             }
@@ -125,7 +125,7 @@ export function FormUsuarios() {
             buscarPostos(user?.user?.empresa_id);
         }
 
-        if (user?.user.tipo_usuario === 'ADMINISTRADOR') {
+        if (userAuth?.user.tipo_usuario === 'ADMINISTRADOR') {
             fetchEmpresas();
         }
     }, [empresa]);
@@ -195,12 +195,12 @@ export function FormUsuarios() {
                                 name="email"
                             />
 
-                            {user?.user.tipo_usuario === "ADMINISTRADOR" &&
+                            {userAuth?.user.tipo_usuario === "ADMINISTRADOR" &&
                                 <Controller
                                     control={control}
                                     rules={{
                                         maxLength: 1,
-                                        required: user?.user.tipo_usuario === "ADMINISTRADOR"
+                                        required: userAuth?.user.tipo_usuario === "ADMINISTRADOR"
                                     }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <View className="w-full justify-center items-center gap-y-2">
@@ -229,7 +229,7 @@ export function FormUsuarios() {
                                     <View className="w-full justify-center items-center gap-y-2">
                                         <View className="w-full items-center my-5 gap-y-2">
                                             <Text className="font-bold text-white text-base mb-2">Posto serviço</Text>
-                                            <CustomSelect value={value} isDisabled={isLoading || user?.user.tipo_usuario === "ADMINISTRADOR" && !empresas.length} data={postos} selectValue={onChange} />
+                                            <CustomSelect value={value} isDisabled={isLoading || userAuth?.user.tipo_usuario === "ADMINISTRADOR" && !empresas.length} data={postos} selectValue={onChange} />
                                             {errors.posto_id && <Text className="text-red-500">Campo é obrigatório</Text>}
                                         </View>
                                     </View>

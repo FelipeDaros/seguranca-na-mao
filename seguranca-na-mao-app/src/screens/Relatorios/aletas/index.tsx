@@ -14,7 +14,7 @@ type Props = 'inicial' | 'final';
 
 
 export function RelatorioAlertas() {
-  const { user } = useAuth();
+  const { userAuth } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +37,7 @@ export function RelatorioAlertas() {
   async function gerarPdf() {
     try {
       setIsLoading(true);
-      const { data } = await api.get(`/relatorios/alertas?dataInicial=${dataInicial}&dataFinal=${dataFinal}&empresa_id=${user?.user.empresa_id}`);
+      const { data } = await api.get(`/relatorios/alertas?dataInicial=${dataInicial}&dataFinal=${dataFinal}&empresa_id=${userAuth?.user.empresa_id}`);
 
       const file = await printToFileAsync({
         html: createDynamicTable(data),

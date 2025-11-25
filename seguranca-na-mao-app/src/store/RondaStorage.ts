@@ -17,7 +17,7 @@ export type PropsRonda = {
   servico_id: number | undefined;
 }
 
-async function getAllRondas() {
+async function getAllRondas(): Promise<PropsRonda[]> {
   try {
     const storage = await AsyncStorage.getItem(RONDA_COLLECTION);
     const rondas: PropsRonda[] = storage ? JSON.parse(storage) : [];
@@ -32,7 +32,6 @@ async function createRonda(ronda: PropsRonda[]) {
   try {
     const storage = JSON.stringify(ronda);
     await AsyncStorage.setItem(RONDA_COLLECTION, storage);
-    
   } catch (error) {
     throw error;
   }

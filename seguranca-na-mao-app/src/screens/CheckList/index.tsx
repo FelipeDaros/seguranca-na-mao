@@ -9,7 +9,7 @@ import axios from "axios";
 import CustomButton from "../../components/CustomButton";
 
 export default function CheckList() {
-  const { user, signOut, handleChecked } = useAuth();
+  const { userAuth, signOut, handleChecked } = useAuth();
   const [confirmarLeitura, setConfirmarLeitura] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [equipamentos, setEquipamentos] = useState<IEquipamento[]>([] as IEquipamento[]);
@@ -21,7 +21,7 @@ export default function CheckList() {
     try {
       setIsLoading(true);
       const { data } = await api.get(
-        `/equipamentos-posto/listar-equipamentos/${user?.user.posto_id}`
+        `/equipamentos-posto/listar-equipamentos/${userAuth?.user.posto_id}`
       );
       setEquipamentos(data);
     } catch (error) {
@@ -40,9 +40,9 @@ export default function CheckList() {
       setIsLoading(true);
 
       const payload = {
-        usuario_id: user?.user.id,
-        empresa_id: user?.user.empresa_id,
-        posto_id: user?.user.posto_id,
+        usuario_id: userAuth?.user.id,
+        empresa_id: userAuth?.user.empresa_id,
+        posto_id: userAuth?.user.posto_id,
         relatorio_lido: true,
         equipamentos_id: equipamentosSelecionados
       }
@@ -51,9 +51,9 @@ export default function CheckList() {
 
       const { data } = await api.post(`/servico`, payload);
 
-      await api.put(`/usuarios/update-status-logado/${user?.user.id}/${statusUsuario}`);
+      await api.put(`/usuarios/update-status-logado/${userAuth?.user.id}/${statusUsuario}`);
       // @ts-ignore
-      handleChecked(user?.user.posto_id, data);
+      handleChecked(userAuth?.user.posto_id, data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return Alert.alert("Checklist", error.response?.data.message);

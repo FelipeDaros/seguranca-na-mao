@@ -16,7 +16,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function Home() {
-  const { user } = useAuth();
+  const { userAuth } = useAuth();
 
   async function requestPermissions() {
     return await Notifications.requestPermissionsAsync({
@@ -36,9 +36,9 @@ export default function Home() {
   return (
     <SafeAreaView className="flex-1 bg-background-escuro">
       <Header />
-      {user?.user.tipo_usuario === 'VIGILANTE' && <HomeVigilante />}
-      {user?.user.tipo_usuario === 'SUPERVISOR' && <HomeSupervisor />}
-      {user?.user.tipo_usuario === 'ADMINISTRADOR' && <HomeAdministrador />}
+      {userAuth?.user.tipo_usuario === 'VIGILANTE' && <HomeVigilante />}
+      {userAuth?.user.tipo_usuario === 'SUPERVISOR' && <HomeSupervisor />}
+      {userAuth?.user.tipo_usuario === 'ADMINISTRADOR' && <HomeAdministrador />}
     </SafeAreaView>
   );
 }

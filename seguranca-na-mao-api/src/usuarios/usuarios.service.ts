@@ -5,8 +5,6 @@ import { MailService } from 'src/mail/mail.service';
 import { emailRegex } from 'src/utils/emailRegex';
 import * as moment from 'moment';
 import { Usuario } from '@prisma/client';
-import { IUpdateUserHorarioAlerta } from './dto/update-horario-alerta';
-import { IUpdateUserHorarioRonda } from './dto/update-horario-ronda.dto';
 import prisma from 'src/prisma.service';
 import { horarioAtualConfigurado } from 'src/utils/datetime';
 
@@ -165,52 +163,6 @@ export class UsuariosService {
       data: user
     });
     return;
-  }
-
-  public async updateHorarioAlerta({ id, horario_alerta }: IUpdateUserHorarioAlerta): Promise<void> {
-    try {
-      const user = await prisma.usuario.findUnique({
-        where: {
-          id
-        }
-      });
-
-      user.horario_alerta = horario_alerta;
-
-      await prisma.usuario.update({
-        data: user,
-        where: {
-          id
-        }
-      });
-
-      return;
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
-  }
-
-  public async updateHorarioRonda({ id, horario_ronda }: IUpdateUserHorarioRonda): Promise<void> {
-    try {
-      const user = await prisma.usuario.findUnique({
-        where: {
-          id
-        }
-      });
-
-      user.ultima_ronda = horario_ronda;
-
-      await prisma.usuario.update({
-        data: user,
-        where: {
-          id
-        }
-      });
-
-      return;
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
   }
 
   public async updateStatusLogado(id: string, status: string): Promise<void> {

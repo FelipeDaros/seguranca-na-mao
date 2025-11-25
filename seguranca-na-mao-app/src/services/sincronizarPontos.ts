@@ -15,14 +15,14 @@ export async function sincronizarPontos(
 ) {
   try {
     let page = 1;
-    const limit = 500;
+    const limit = 50;
     let hasMore = true;
     let totalSincronizados = 0;
     let totalProcessados = 0;
 
     while (hasMore) {
       const { data } = await api.get<SincronizacaoResponse>(
-        `/ponto/sincronizar/${user?.user.posto_id}?page=${page}&limit=${limit}`
+        `/ponto/sincronizar/${user.posto_id}?page=${page}&limit=${limit}`
       );
 
       const pontosLocais = await getAllPontos();

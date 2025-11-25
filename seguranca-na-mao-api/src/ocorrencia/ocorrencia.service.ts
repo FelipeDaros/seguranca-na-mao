@@ -8,7 +8,7 @@ import prisma from 'src/prisma.service';
 export class OcorrenciaService {
   constructor() { }
   public async create({
-    dataOcorrencia,
+    data_ocorrencia,
     descricao,
     usuario_id,
     titulo,
@@ -18,9 +18,8 @@ export class OcorrenciaService {
       const createOcorrencia =
         await prisma.registroOcorrencia.create({
           data: {
-            dataOcorrencia,
+            data_ocorrencia,
             descricao,
-            possuiFoto: false,
             usuario_id,
             titulo,
             status: 'ABERTO',
@@ -47,7 +46,7 @@ export class OcorrenciaService {
     try {
       const occorrencias = await prisma.registroOcorrencia.findMany(
         {
-          include: { FotosOcorrencia: true, User: true },
+          include: { fotosOcorrencia: true, user: true },
         },
       );
 
@@ -63,8 +62,8 @@ export class OcorrenciaService {
         id,
       },
       include: {
-        FotosOcorrencia: true,
-        User: true,
+        fotosOcorrencia: true,
+        user: true,
       },
     });
 

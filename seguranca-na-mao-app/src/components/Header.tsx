@@ -11,9 +11,9 @@ type Props = {
 export default function Header({ back }: Props) {
   const netInfo = useNetInfo();
   const navigation = useNavigation();
-  const { user, signOut, isConnected } = useAuth();
+  const { userAuth, signOut, isConnected } = useAuth();
   //@ts-ignore
-  const nomeUsuario = user?.user.nome[0].toUpperCase() + user?.user.nome?.substr(1);
+  const nomeUsuario = userAuth?.user.nome[0].toUpperCase() + userAuth?.user.nome?.substr(1);
 
   function handleNavigate() {
     //@ts-ignore
@@ -21,13 +21,7 @@ export default function Header({ back }: Props) {
   }
 
   function sair() {
-    if (user?.user.tipo_usuario !== 'VIGILANTE') {
-      return signOut();
-    }
-    
-    if (!netInfo.isConnected) {
-      Alert.alert("Sair", "Para finalizar expediente é necessário estar conectado");
-    }
+     return signOut();
   }
 
   function chooseValue(selected: any) {

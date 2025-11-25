@@ -19,15 +19,17 @@ import { Empresas } from "../screens/Empresas";
 import { EmpresaSelecionada } from "../screens/Empresas/EmpresaSelecionada";
 import { FinishDay } from "../screens/FinishDay";
 import { RegisterEmpresa } from "../screens/Empresas/RegisterEmpresa";
+import { Round } from "../screens/Round";
+import { RoundSelected } from "../screens/Round/Components/RoundSelected";
 
 export function AuthRoutes() {
   const { Screen, Navigator, Group } = createNativeStackNavigator();
-  const { user } = useAuth();
+  const { userAuth } = useAuth();
   return (
     <Navigator screenOptions={{ headerShown: false, animation: "fade" }}>
-      {(user?.user.status_logado === 'CHECKLIST' && user?.user.tipo_usuario === 'VIGILANTE') && <Screen name="CheckList" component={CheckList} />}
-      {(user?.user.status_logado === 'FINALIZADO' && user?.user.tipo_usuario === 'VIGILANTE') && <Screen name="FinishDay" component={FinishDay} />}
-      {((user?.user.status_logado === 'LOGADO' && user?.user.tipo_usuario === 'VIGILANTE') || user?.user.tipo_usuario !== 'VIGILANTE') &&
+      {(userAuth?.user.status_logado === 'CHECKLIST' && userAuth?.user.tipo_usuario === 'VIGILANTE') && <Screen name="CheckList" component={CheckList} />}
+      {(userAuth?.user.status_logado === 'FINALIZADO' && userAuth?.user.tipo_usuario === 'VIGILANTE') && <Screen name="FinishDay" component={FinishDay} />}
+      {((userAuth?.user.status_logado === 'LOGADO' && userAuth?.user.tipo_usuario === 'VIGILANTE') || userAuth?.user.tipo_usuario !== 'VIGILANTE') &&
         <Group>
           <Screen name="Home" component={Home} />
           <Screen name="PointCreate" component={PointCreate} />
@@ -44,8 +46,11 @@ export function AuthRoutes() {
           <Screen name="RegisterEmpresa" component={RegisterEmpresa} />
           
           <Screen name="Occurrence" component={Occurrence} />
-          {/* 
           <Screen name="RegisterOccurrence" component={RegisterOccurrence} />
+          <Screen name="Round" component={Round} />
+          <Screen name="RoundSelected" component={RoundSelected} />
+
+          {/* 
           <Screen name="RelatorioRonda" component={RelatorioRonda} />
           <Screen name="RelatorioAlertas" component={RelatorioAlertas} />
           */}

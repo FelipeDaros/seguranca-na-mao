@@ -24,7 +24,7 @@ type PropsUser = {
 
 export function Usuarios() {
     const navigation = useNavigation();
-    const { user } = useAuth();
+    const { userAuth } = useAuth();
     const [usuarios, setUsuarios] = useState<PropsUser[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +32,7 @@ export function Usuarios() {
         try {
             setIsLoading(true);
             // @ts-ignore
-            const { data } = await api.get(`usuarios/${user.user.tipo_usuario}/${user?.user.empresa_id}/${user?.user.id}`);
+            const { data } = await api.get(`usuarios/${userAuth.user.tipo_usuario}/${userAuth?.user.empresa_id}/${userAuth?.user.id}`);
             setUsuarios(data);
         } catch (error) {
             return Alert.alert("Usuário", "Erro ao listar usuários")

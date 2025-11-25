@@ -15,7 +15,7 @@ interface IUser {
 }
 
 export function Perfil() {
-    const { user, updateUser } = useAuth();
+    const { userAuth, updateUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
     const {
@@ -34,7 +34,7 @@ export function Perfil() {
     });
 
     async function fetchData() {
-        const { data } = await api.get(`/usuarios/find/${user?.user.id}`);
+        const { data } = await api.get(`/usuarios/find/${userAuth?.user.id}`);
         setValue("nome", data.nome);
         setValue("senha", data.senha);
         setValue("email", data.email);
@@ -44,7 +44,7 @@ export function Perfil() {
     async function handleSave(userData: IUser) {
         try {
             setIsLoading(true);
-            await api.put(`/usuarios/${user?.user.id}`, userData);
+            await api.put(`/usuarios/${userAuth?.user.id}`, userData);
             // toast.show({
             //     title: "Usuário atualizado com sucesso!",
             //     duration: 3000,
@@ -53,9 +53,9 @@ export function Perfil() {
             // });
 
             const updateUserContext = {
-                ...user,
+                ...userAuth,
                 user: {
-                    ...user?.user,
+                    ...userAuth?.user,
                     nome: userData.nome,
                     email: userData.email 
                 }

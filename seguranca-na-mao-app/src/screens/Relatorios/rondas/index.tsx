@@ -13,7 +13,7 @@ import CustomButton from "../../../components/CustomButton";
 type Props = 'inicial' | 'final';
 
 export function RelatorioRonda() {
-  const { user } = useAuth();
+  const { userAuth } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,7 +36,7 @@ export function RelatorioRonda() {
   async function gerarPdf() {
     try {
       setIsLoading(true);
-      const { data } = await api.get(`/relatorios/ronda?dataInicial=${dataInicial}&dataFinal=${dataFinal}&empresa_id=${user?.user.empresa_id}`);
+      const { data } = await api.get(`/relatorios/ronda?dataInicial=${dataInicial}&dataFinal=${dataFinal}&empresa_id=${userAuth?.user.empresa_id}`);
 
       const file = await printToFileAsync({
         html: createDynamicTable(data),

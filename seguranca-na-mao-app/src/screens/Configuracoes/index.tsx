@@ -9,7 +9,7 @@ import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
 export default function Configuracoes() {
     const navigation = useNavigation();
-    const user = useAuth();
+    const { userAuth } = useAuth();
 
     const [loading, setLoading] = useState(false);
     const [vigilantes, setVigilantes] = useState<IVigilanteConfig[]>([] as IVigilanteConfig[]);
@@ -17,7 +17,7 @@ export default function Configuracoes() {
     async function fetchVigilantes() {
         try {
             setLoading(true);
-            const { data } = await api.get<IVigilanteConfig[]>(`/configuracoes/${user.user?.user.empresa_id}`);
+            const { data } = await api.get<IVigilanteConfig[]>(`/configuracoes/${userAuth?.user.empresa_id}`);
             setVigilantes(data);
         } catch (error) {
             Alert.alert("Configuração", "Erro ao buscar os vigilantes!");

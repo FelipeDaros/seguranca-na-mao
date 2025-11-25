@@ -39,7 +39,7 @@ export default function PostService() {
     reset,
     formState: { errors },
   } = useForm<FormData>({});
-  const { signOut, user } = useAuth();
+  const { signOut, userAuth } = useAuth();
   const navigation = useNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -108,7 +108,7 @@ export default function PostService() {
   async function buscarEmpresa() {
     try {
       setIsLoading(true);
-      const { data } = await api.get(`/empresa/${user?.user.empresa_id}`);
+      const { data } = await api.get(`/empresa/${userAuth?.user.empresa_id}`);
       setValue("empresa_id", data.id);
       setValue("empresa_nome", data.nome);
       setEmpresa(data)

@@ -39,7 +39,7 @@ const tiposUsuarios = [
 export function EditUsuarios() {
     const navigation = useNavigation();
     const route = useRoute();
-    const { user } = useAuth();
+    const { userAuth } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [postos, setPostos] = useState<any[]>([]);
 
@@ -60,7 +60,7 @@ export function EditUsuarios() {
     async function buscarPostos() {
         try {
             setIsLoading(true)
-            const { data } = await api.get(`/posto-servico/${user?.user.empresa_id}`);
+            const { data } = await api.get(`/posto-servico/${userAuth?.user.empresa_id}`);
             setPostos(data);
         } catch (error) {
             Alert.alert("Usuário", "Erro ao buscar os postos de serviço!");
@@ -88,7 +88,7 @@ export function EditUsuarios() {
                 senha,
                 email,
                 posto_id,
-                empresa_id: user?.user?.empresa_id,
+                empresa_id: userAuth?.user?.empresa_id,
                 tipo_usuario: tipo_usuario
             });
             reset();

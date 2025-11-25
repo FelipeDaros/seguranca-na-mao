@@ -130,12 +130,11 @@ model RegistroOcorrencia {
   id              Int               @id @default(autoincrement())
   titulo          String
   descricao       String
-  User            Usuario?          @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  user            Usuario?          @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
   usuario_id      String
-  possuiFoto      Boolean           @map("possui_foto")
-  dataOcorrencia  DateTime          @map("data_ocorrencia")
+  data_ocorrencia  DateTime         
   created_at      DateTime          @default(now())
-  FotosOcorrencia FotosOcorrencia[]
+  fotosOcorrencia FotosOcorrencia[]
   status          String?
 
   @@map("registro_ocorrencia")

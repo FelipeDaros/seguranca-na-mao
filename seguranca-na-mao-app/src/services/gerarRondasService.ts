@@ -2,10 +2,10 @@ import moment from "moment-timezone";
 import { getAllPontos } from "../store/PontoStorage";
 import { createRonda } from "../store/RondaStorage";
 import { generateRandomNumber } from "../utils/utils";
-import { IUsuario } from "../interfaces/IUsuario";
 import { IRonda } from "../interfaces/IRonda";
+import { IAuthUser } from "../interfaces/IAuthUser";
 
-export async function gerarRondasService(user: IUsuario) {
+export async function gerarRondasService(user: IAuthUser) {
   try {
     const listRondas: any = [];
     const pontos = await getAllPontos();

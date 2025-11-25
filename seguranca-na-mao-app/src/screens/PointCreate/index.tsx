@@ -22,7 +22,7 @@ type FormData = {
 
 export default function PointCreate() {
   const navigation = useNavigation();
-  const { user, signOut } = useAuth();
+  const { userAuth, signOut } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -64,7 +64,7 @@ export default function PointCreate() {
         latitude,
         longitude,
         posto_id,
-        email: user?.user?.email
+        email: userAuth?.user?.email
       });
       Alert.alert("Salvar", "Ponto cadastrado com sucesso!");
       reset();
@@ -81,7 +81,7 @@ export default function PointCreate() {
   async function buscarPostoVinculadoAoUsuario() {
     try {
       setIsLoading(true);
-      const { data } = await api.get(`/posto-servico/${user?.user.empresa_id}`);
+      const { data } = await api.get(`/posto-servico/${userAuth?.user.empresa_id}`);
       setData(data);
     } catch (error: any) {
       if (axios.isAxiosError(error)) {

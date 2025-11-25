@@ -1,11 +1,10 @@
 import Header from "../../components/Header";
-import CardsOccurrence from "./Components/CardsOccurrence";
 import { api } from "../../config/api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { IOcorrenciaProps } from "./Interfaces/IOcorrence";
-import ModalOccurrenceSelect from "./Components/ModalOccurrenceSelect";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../contexts/AuthContext";
+import { View, Text, FlatList, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Occurrence() {
@@ -13,34 +12,24 @@ export default function Occurrence() {
   const [ocorrencias, setOcorrencias] = useState<IOcorrenciaProps[]>([]);
   const [ocorrenciaSelecionada, setOcorrenciaSelecionada] = useState<number>();
   const [isOpen, setIsOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { userAuth, signOut } = useAuth();
 
   async function buscarOccorrencias() {
     try {
       const { data } = await api.get("/ocorrencia");
       setOcorrencias(data);
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         signOut();
-        // toast.show({
-        //   title: "Você precisa efetuar o login!",
-        //   duration: 3000,
-        //   bg: "error.500",
-        //   placement: "top",
-        // });
+        Alert.alert("Erro", "Você precisa efetuar o login!");
         return;
       }
-      // toast.show({
-      //   title: "Erro ao listar!",
-      //   duration: 3000,
-      //   bg: "error.500",
-      //   placement: "top",
-      // });
+      Alert.alert("Erro", "Erro ao listar ocorrências!");
     }
   }
 
   function handleNavigateRegistroOcorrencia() {
-    navigation.navigate("RegisterOccurrence");
+    navigation.navigate("RegisterOccurrence" as never);
   }
 
   useFocusEffect(
@@ -50,43 +39,40 @@ export default function Occurrence() {
   );
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className="flex-1 bg-background-escuro">
       <Header back />
-      {/* <VStack alignItems="center" justifyItems="center" mt="4">
-        <Text fontFamily="mono" color="personColors.150" fontSize="lg">
+      <View className="flex-1 items-center mt-4">
+        <Text className="text-white text-lg font-mono">
           Ocorrências
         </Text>
-        <Button
-          variant="outline"
+        <Pressable
           onPress={handleNavigateRegistroOcorrencia}
-          borderColor="personColors.50"
-          w="80%"
-          mt="8"
+          className="border border-green-500 rounded-md w-4/5 p-3 mt-8 items-center"
         >
-          <Text color="personColors.50" fontFamily="heading">
+          <Text className="text-green-500 font-bold">
             Registrar Ocorrência
           </Text>
-        </Button>
+        </Pressable>
         <FlatList
-          mt="4"
+          className="mt-4 w-full"
           showsVerticalScrollIndicator={false}
-          height="3/5"
           data={ocorrencias}
-          keyExtractor={(item, index) => item.id as any}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <CardsOccurrence
-              ocorrenciaProps={item}
-              selecionarOcorrencia={setOcorrenciaSelecionada}
-              setIsOpen={() => setIsOpen(true)}
-            />
+            <Pressable
+              onPress={() => {
+                setOcorrenciaSelecionada(item.id);
+                setIsOpen(true);
+              }}
+              className="bg-zinc-800 mx-4 my-2 p-4 rounded-md"
+            >
+              <Text className="text-white text-base">
+                Ocorrência #{item.id}
+              </Text>
+            </Pressable>
           )}
         />
-      </VStack> */}
-      <ModalOccurrenceSelect
-        id={ocorrenciaSelecionada}
-        open={isOpen}
-        setIsClose={() => setIsOpen(false)}
-      />
+      </View>
     </SafeAreaView>
   );
 }
